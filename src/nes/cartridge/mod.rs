@@ -4,18 +4,18 @@ pub mod header;
 use anyhow::Result;
 use header::INesHeader;
 
-const PROGRAM_UNIT_SIZE: usize = 16386; // 16384 byte
+const PROGRAM_UNIT_SIZE: usize = 16384; // 16384 byte
 const CHARACTER_UNIT_SIZE: usize = 8192; // 8192 byte
 
 #[derive(Debug, PartialEq)]
 pub struct Cartridge {
-    header: INesHeader,
-    program_rom: Vec<u8>,
-    character_rom: Vec<u8>,
+    pub header: INesHeader,
+    pub program_rom: Vec<u8>,
+    pub character_rom: Vec<u8>,
 }
 
 impl Cartridge {
-    fn new(binary: &[u8]) -> Result<Self> {
+    pub fn new(binary: &[u8]) -> Result<Self> {
         ensure!(binary.len() >= 16, "binary must be over than 16 bytes");
 
         let header_binary = binary[0..16].to_vec();
