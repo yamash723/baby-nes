@@ -41,10 +41,7 @@ pub enum MirroringType {
 impl INesHeader {
     pub fn new(binary: &Vec<u8>) -> Result<Self> {
         ensure!(binary.len() >= 7, "binary must be over than 7 bytes");
-        ensure!(
-            &binary[0..=3] == MAGIC_BYTES.to_vec(),
-            "invalid magic bytes"
-        );
+        ensure!(binary[0..=3] == MAGIC_BYTES.to_vec(), "invalid magic bytes");
 
         let flag6 = Flag6::parse(&binary[6]);
 

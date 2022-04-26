@@ -15,7 +15,7 @@ pub struct Cartridge {
 }
 
 impl Cartridge {
-    fn new(binary: &Vec<u8>) -> Result<Self> {
+    fn new(binary: &[u8]) -> Result<Self> {
         ensure!(binary.len() >= 16, "binary must be over than 16 bytes");
 
         let header_binary = binary[0..16].to_vec();
