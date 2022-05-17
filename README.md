@@ -7,7 +7,7 @@ NES Emulator written in Rust.
 - [x] Cartridge
 - [ ] CPU
 - [ ] APU
-- [ ] RAM
+- [x] RAM
 - [ ] BUS
 - [ ] PAD
 - [ ] Main loop
