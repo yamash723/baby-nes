@@ -33,4 +33,18 @@ impl Registers {
             pc: 0,
         }
     }
+
+    pub fn update_zero_and_negative_flags(&mut self, result: u8) {
+        if result == 0 {
+            self.p.insert(CpuStatusFlag::ZERO);
+        } else {
+            self.p.remove(CpuStatusFlag::ZERO);
+        }
+
+        if result >> 7 == 1 {
+            self.p.insert(CpuStatusFlag::NEGATIVE);
+        } else {
+            self.p.remove(CpuStatusFlag::NEGATIVE);
+        }
+    }
 }
