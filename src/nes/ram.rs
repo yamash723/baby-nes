@@ -1,5 +1,5 @@
 pub struct Ram {
-    data: Vec<u16>,
+    data: Vec<u8>,
 }
 
 impl <'a> Ram {
@@ -7,14 +7,14 @@ impl <'a> Ram {
         Self { data: vec!(0; size.into()) }
     }
 
-    pub fn read(&'a self, address: u16) -> &'a u16 {
+    pub fn read(&'a self, address: u16) -> &'a u8 {
         match self.data.get(address as usize) {
             Some(data) => data,
             None => panic!("Out-of-range access to RAM. RAM size {:X} / address: {:X}", self.data.len(), address),
         }
     }
 
-    pub fn write(&mut self, address: u16, value: u16) -> &Self {
+    pub fn write(&mut self, address: u16, value: u8) -> &Self {
         match self.data.get_mut(address as usize) {
             Some(data) => *data = value,
             None => panic!("Out-of-range access to RAM. RAM size {:X} / address: {:X}", self.data.len(), address),

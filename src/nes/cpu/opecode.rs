@@ -1,6 +1,7 @@
 use once_cell::sync::Lazy;
 use std::{collections::HashMap};
 
+#[derive(Debug)]
 pub struct Opecode {
     pub code: Code,
     pub mode: AddressingMode,
@@ -23,6 +24,7 @@ pub enum AddressingMode {
     AbsoluteIndirect,
 }
 
+#[derive(Debug)]
 pub enum Code {
     BNE,
     DEY,

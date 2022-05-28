@@ -1,17 +1,14 @@
+use crate::nes::bus::Bus;
+
 use super::{registers::{Registers, CpuStatusFlag}, opecode::{self, Code, AddressingMode}};
 
-pub struct Cpu<'a, T: CpuBus> {
-    registers: Registers,
+pub struct Cpu<'a, T: Bus> {
+    registers: &'a mut Registers,
     bus: &'a mut T,
 }
 
-pub trait CpuBus {
-    fn read(&self, address: u16) -> u8;
-    fn write(&mut self, address: u16, data: u8);
-}
-
-impl <'a, T: CpuBus> Cpu<'a, T> {
-    pub fn new(registers: Registers, bus: &'a mut T) -> Self {
+impl <'a, T: Bus> Cpu<'a, T> {
+    pub fn new(registers: &'a mut Registers, bus: &'a mut T) -> Self {
         Self { registers, bus }
     }
 
@@ -31,9 +28,21 @@ impl <'a, T: CpuBus> Cpu<'a, T> {
         }
     }
 
+    fn fetch_absolute(&mut self) -> u16 {
+        let lower = self.fetch() as u16;
+        let upper = self.fetch() as u16;
+        lower | upper << 8
+    }
+
+    fn fetch_absolute_x(&mut self) -> u16 {
+        self.fetch_absolute() + self.registers.x as u16
+    }
+
     pub fn run(&mut self) {
         let instruction_code = &self.fetch();
         let opecode = opecode::OPECODE_MAP.get(&instruction_code).unwrap();
+
+        println!("{:?} : {:?}", &opecode.code, &opecode.mode);
 
         match opecode.code {    
             Code::LDA => &self.lda(&opecode.mode),
@@ -52,18 +61,11 @@ impl <'a, T: CpuBus> Cpu<'a, T> {
     fn read_operand_address(&mut self, mode: &AddressingMode) -> u16 {
         match mode {
             AddressingMode::Implied => self.registers.pc,
-            AddressingMode::Accumulator => todo!(),
-            AddressingMode::Immediate => todo!(),
-            AddressingMode::ZeroPage => todo!(),
-            AddressingMode::ZeroPageIndexedX => todo!(),
-            AddressingMode::ZeroPageIndexedY => todo!(),
-            AddressingMode::Absolute => todo!(),
-            AddressingMode::AbsoluteIndexedX => todo!(),
-            AddressingMode::AbsoluteIndexedY => todo!(),
+            AddressingMode::Immediate => self.fetch() as u16,
+            AddressingMode::Absolute => self.fetch_absolute(),
+            AddressingMode::AbsoluteIndexedX => self.fetch_absolute_x(),
             AddressingMode::Relative => self.fetch_relative(),
-            AddressingMode::IndexedIndirect => todo!(),
-            AddressingMode::IndirectIndexed => todo!(),
-            AddressingMode::AbsoluteIndirect => todo!(),
+            _ => todo!(),
         }
     }
 
@@ -123,14 +125,14 @@ impl <'a, T: CpuBus> Cpu<'a, T> {
 
 #[cfg(test)]
 mod cpu_tests {
-    use crate::nes::cpu::{registers::Registers};
-    use super::{Cpu, CpuBus};
+    use crate::nes::{cpu::{registers::Registers}, bus::Bus};
+    use super::Cpu;
 
     struct MockBus {
         data: Vec<u8>,
     }
 
-    impl CpuBus for MockBus {
+    impl Bus for MockBus {
         fn read(&self, address: u16) -> u8 {
             self.data[address as usize]
         }
@@ -147,7 +149,7 @@ mod cpu_tests {
         let mut bus = MockBus { data: vec![1, 1, 10] };
         registers.pc = 2;
 
-        let mut cpu = Cpu::new(registers, &mut bus);
+        let mut cpu = Cpu::new(&mut registers, &mut bus);
         let operand = &cpu.fetch();
 
         assert_eq!(*operand, 10);
