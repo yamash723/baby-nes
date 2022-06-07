@@ -7,7 +7,7 @@ pub struct Opecode {
     pub mode: AddressingMode,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum AddressingMode {
     Implied,
     Accumulator,

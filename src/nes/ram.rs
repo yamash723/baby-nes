@@ -14,13 +14,11 @@ impl <'a> Ram {
         }
     }
 
-    pub fn write(&mut self, address: u16, value: u8) -> &Self {
+    pub fn write(&mut self, address: u16, value: u8) {
         match self.data.get_mut(address as usize) {
             Some(data) => *data = value,
             None => panic!("Out-of-range access to RAM. RAM size {:X} / address: {:X}", self.data.len(), address),
         }
-
-        self
     }
 }
 

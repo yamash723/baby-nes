@@ -1,14 +1,14 @@
 use crate::nes::bus::Bus;
 
-use super::{registers::{Registers, CpuStatusFlag}, opecode::{self, Code, AddressingMode}};
+use super::{registers::{CpuRegisters, CpuStatusFlag}, opecode::{self, Code, AddressingMode}};
 
 pub struct Cpu<'a, T: Bus> {
-    registers: &'a mut Registers,
+    registers: &'a mut CpuRegisters,
     bus: &'a mut T,
 }
 
 impl <'a, T: Bus> Cpu<'a, T> {
-    pub fn new(registers: &'a mut Registers, bus: &'a mut T) -> Self {
+    pub fn new(registers: &'a mut CpuRegisters, bus: &'a mut T) -> Self {
         Self { registers, bus }
     }
 
@@ -58,10 +58,17 @@ impl <'a, T: Bus> Cpu<'a, T> {
         };
     }
 
+    fn fetch_opecode(&mut self, mode: &AddressingMode) -> u8 { 
+        if mode == &AddressingMode::Immediate {
+            return self.fetch();
+        }
+
+        let address = self.read_operand_address(mode);
+        self.bus.read(address)
+    }
+
     fn read_operand_address(&mut self, mode: &AddressingMode) -> u16 {
         match mode {
-            AddressingMode::Implied => self.registers.pc,
-            AddressingMode::Immediate => self.fetch() as u16,
             AddressingMode::Absolute => self.fetch_absolute(),
             AddressingMode::AbsoluteIndexedX => self.fetch_absolute_x(),
             AddressingMode::Relative => self.fetch_relative(),
@@ -70,20 +77,17 @@ impl <'a, T: Bus> Cpu<'a, T> {
     }
 
     fn lda(&mut self, mode: &AddressingMode) {
-        let address = self.read_operand_address(mode);
-        self.registers.a = self.bus.read(address);
+        self.registers.a = self.fetch_opecode(mode);
         self.registers.update_zero_and_negative_flags(self.registers.a);
     }
 
     fn ldx(&mut self, mode: &AddressingMode) {
-        let address = self.read_operand_address(mode);
-        self.registers.x = self.bus.read(address);
+        self.registers.x = self.fetch_opecode(mode);
         self.registers.update_zero_and_negative_flags(self.registers.x);
     }
 
     fn ldy(&mut self, mode: &AddressingMode) {
-        let address = self.read_operand_address(mode);
-        self.registers.y = self.bus.read(address);
+        self.registers.y = self.fetch_opecode(mode);
         self.registers.update_zero_and_negative_flags(self.registers.y);
     }
 
@@ -125,7 +129,8 @@ impl <'a, T: Bus> Cpu<'a, T> {
 
 #[cfg(test)]
 mod cpu_tests {
-    use crate::nes::{cpu::{registers::Registers}, bus::Bus};
+    use crate::nes::{bus::Bus, cpu::registers::CpuRegisters};
+
     use super::Cpu;
 
     struct MockBus {
@@ -144,7 +149,7 @@ mod cpu_tests {
 
     #[test]
     fn fetch_should_increment_pc_test() {
-        let mut registers = Registers::new();
+        let mut registers = CpuRegisters::new();
 
         let mut bus = MockBus { data: vec![1, 1, 10] };
         registers.pc = 2;

@@ -15,7 +15,7 @@ bitflags! {
     }
 }
 
-pub struct Registers {
+pub struct CpuRegisters {
     pub a: u8,
     pub x: u8,
     pub y: u8,
@@ -24,9 +24,9 @@ pub struct Registers {
     pub pc: u16,
 }
 
-impl Registers {
+impl CpuRegisters {
     pub fn new() -> Self {
-        Registers {
+        CpuRegisters {
             a: 0x00,
             x: 0x00,
             y: 0x00,
