@@ -44,6 +44,7 @@ impl PpuRegisters {
 
 impl PpuRegistration for PpuRegisters {
     fn read(&self, address: u16) -> u8 {
+        println!("PPU registers read | Address: {:x}", address);
         unimplemented!();
     }
 
