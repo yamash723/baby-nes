@@ -42,9 +42,9 @@ impl <'a, T: Bus> Cpu<'a, T> {
         let instruction_code = &self.fetch();
         let opecode = opecode::OPECODE_MAP.get(&instruction_code).unwrap();
 
-        println!("{:?} : {:?}", &opecode.code, &opecode.mode);
+        println!("{:?} : {:?} : {:?}", &opecode.code, &opecode.mode, &opecode.cycle);
 
-        match opecode.code {    
+        match opecode.code {
             Code::LDA => &self.lda(&opecode.mode),
             Code::LDX => &self.ldx(&opecode.mode),
             Code::LDY => &self.ldy(&opecode.mode),
