@@ -1,7 +1,7 @@
 use core::time;
 use std::{fs::File, io::Read, thread};
 
-use self::{cartridge::Cartridge, cpu::{cpu::Cpu, registers::CpuRegisters, bus::CpuBus}, ram::Ram, ppu::{registers::PpuRegisters, bus::PpuBus}};
+use self::{cartridge::Cartridge, cpu::{cpu::Cpu, registers::CpuRegisters, bus::CpuBus}, ram::Ram, ppu::{registers::PpuRegisters, bus::PpuBus, frame::Frame}};
 use anyhow::Result;
 
 pub mod cartridge;
@@ -12,7 +12,6 @@ pub mod bus;
 
 const WRAM_SIZE: u16 = 2024;
 const VRAM_SIZE: u16 = 2024;
-const PALETTE_TABLE_SIZE: u16 = 32;
 
 pub struct Nes<T> {
     cartridge: Cartridge,
@@ -20,7 +19,6 @@ pub struct Nes<T> {
     ppu_registers: T,
     wram: Ram,
     vram: Ram,
-    palette_ram: Ram,
 }
 
 impl Nes<PpuRegisters> {
@@ -35,18 +33,30 @@ impl Nes<PpuRegisters> {
         let ppu_registers = PpuRegisters::new();
         let wram = Ram::new(WRAM_SIZE);
         let vram = Ram::new(VRAM_SIZE);
-        let palette_ram = Ram::new(PALETTE_TABLE_SIZE);
 
-        Ok(Nes { cartridge, cpu_registers, ppu_registers, wram, vram, palette_ram })
+        Ok(Nes { cartridge, cpu_registers, ppu_registers, wram, vram })
     }
 
-    pub fn run(&mut self) {
-        let mut ppu_bus = PpuBus::new(&mut self.ppu_registers, &mut self.cartridge.character_rom, &mut self.vram, &mut self.palette_ram);
+    pub fn run<'call, Fr, Fi>(&mut self, mut render_callback: Fr, mut input_callback: Fi)
+    where
+        Fr: FnMut(&Frame) + 'call,
+        Fi: FnMut() + 'call,
+    {
+        let pattern_table = Ram::from_vec(self.cartridge.character_rom.clone());
+        let mut ppu_bus = PpuBus::new(&mut self.ppu_registers, &mut pattern_table, &mut self.vram);
         let mut cpu_bus = CpuBus::new(&self.cartridge.program_rom, &mut self.wram, &mut ppu_bus);
         let mut cpu = Cpu::new(&mut self.cpu_registers, &mut cpu_bus);
 
         loop {
             cpu.run();
+
+            let mut frame = Frame::new();
+            frame.set_pixel(10, 10, (255, 255, 255));
+            frame.set_pixel(11, 10, (255, 255, 255));
+            frame.set_pixel(12, 10, (255, 255, 255));
+
+            input_callback();
+            render_callback(&frame);
 
             let ten_millis = time::Duration::from_millis(50);
             thread::sleep(ten_millis);

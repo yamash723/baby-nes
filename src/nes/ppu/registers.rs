@@ -4,7 +4,7 @@ pub mod ppu_control;
 pub mod ppu_mask;
 pub mod ppu_data;
 
-use self::{ppu_scroll::PpuScroll, ppu_address::PpuAddress, ppu_control::PpuCtrl, ppu_mask::PpuMask, ppu_data::PpuData};
+use self::{ppu_scroll::PpuScroll, ppu_address::PpuAddress, ppu_control::{PpuCtrl, BaseNameTableAddress}, ppu_mask::PpuMask, ppu_data::PpuData};
 
 use super::ppu::PpuContext;
 
@@ -34,6 +34,10 @@ impl PpuRegisters {
             // ppu_status: PpuStatus::new(),
             // oam: Oam::new(),
         }
+    }
+
+    pub fn get_nametable_address(&self) -> BaseNameTableAddress {
+        self.ppu_ctrl.base_name_table_address()
     }
 
     fn increment_vram(&mut self) {

@@ -47,7 +47,7 @@ impl PpuData {
         let calibrated_addr = self.calibrate_address(addr);
 
         match PpuMemoryMapRule::address_to_map_type(addr) {
-            MapType::PatternTable => self.buf = *ppu_context.pattern_table.get(calibrated_addr as usize).unwrap(),
+            MapType::PatternTable => self.buf = *ppu_context.pattern_table.read(calibrated_addr),
             MapType::Vram | MapType::VramMirror => self.buf = *ppu_context.vram.read(calibrated_addr),
             MapType::Palette | MapType::PaletteMirror => {
                 self.buf = *ppu_context.vram.read(calibrated_addr);
@@ -75,15 +75,15 @@ impl PpuData {
 
 #[cfg(test)]
 mod ppu_data_test {
-    use crate::nes::{ppu::{ppu::PpuContext, registers::ppu_data::PpuData}, ram::Ram};
+    use crate::nes::{ppu::{ppu::PpuContext, registers::ppu_data::PpuData, palette_ram::PaletteRam}, ram::Ram};
 
 
     #[test]
     fn read_pattern_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0xFF;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0xFF;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         let mut ppu_data = PpuData { buf: 0xEE };
@@ -96,9 +96,9 @@ mod ppu_data_test {
     #[test]
     fn read_vram_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         ppu_context.vram.write(0x00, 0xFF);
@@ -113,9 +113,9 @@ mod ppu_data_test {
     #[test]
     fn read_vram_mirror_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         ppu_context.vram.write(0x00, 0xFF);
@@ -130,9 +130,9 @@ mod ppu_data_test {
     #[test]
     fn read_palette_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         ppu_context.vram.write(0x00, 0xFF);
@@ -148,9 +148,9 @@ mod ppu_data_test {
     #[test]
     fn read_palette_mirror_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         ppu_context.vram.write(0x00, 0xFF);
@@ -167,9 +167,9 @@ mod ppu_data_test {
     #[should_panic]
     fn write_pattern_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         let mut ppu_data = PpuData::new();
@@ -181,9 +181,9 @@ mod ppu_data_test {
     #[test]
     fn write_vram_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         let mut ppu_data = PpuData::new();
@@ -195,9 +195,9 @@ mod ppu_data_test {
     #[test]
     fn write_vram_mirror_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         let mut ppu_data = PpuData::new();
@@ -209,9 +209,9 @@ mod ppu_data_test {
     #[test]
     fn write_palette_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         let mut ppu_data = PpuData::new();
@@ -223,9 +223,9 @@ mod ppu_data_test {
     #[test]
     fn write_palette_mirror_test() {
         let mut ppu_context = PpuContext {
-            pattern_table: &mut vec![0x00;0x20],
+            pattern_table: &mut Ram::from_vec(vec![0x00;0x20]),
             vram: &mut Ram::new(0x20),
-            palette_ram: &mut Ram::new(0x20),
+            palette_ram: PaletteRam::new(),
         };
 
         let mut ppu_data = PpuData::new();

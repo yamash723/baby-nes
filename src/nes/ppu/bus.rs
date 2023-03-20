@@ -2,26 +2,31 @@ use std::{cell::RefCell};
 
 use crate::nes::{ram::Ram, bus::Bus};
 
-use super::{registers::PpuRegistration, ppu::PpuContext};
+use super::{registers::{PpuRegistration, PpuRegisters}, ppu::PpuContext, palette_ram::PaletteRam};
 
-pub struct PpuBus<'a, T: PpuRegistration> {
-    pub ppu_registers: &'a mut T,
-    pub ppu_context: RefCell<PpuContext<'a>>,
+pub struct PpuBus<'a> {
+    pub registers: &'a mut PpuRegisters,
+    pub context: RefCell<PpuContext<'a>>,
 }
 
-impl <'a, T> PpuBus<'a, T> where T: PpuRegistration {
-    pub fn new(ppu_registers: &'a mut T, pattern_table: &'a mut Vec<u8>, vram: &'a mut Ram, palette_ram: &'a mut Ram) -> Self {
-        let ppu_context = PpuContext { pattern_table, vram, palette_ram };
-        Self { ppu_registers, ppu_context: RefCell::new(ppu_context) }
+impl <'a> PpuBus<'a> {
+    pub fn new(registers: &'a mut PpuRegisters , pattern_table: &'a mut Ram, vram: &'a mut Ram) -> Self {
+        let context = PpuContext {
+            pattern_table,
+            vram,
+            palette_ram: PaletteRam::new(),
+        };
+
+        Self { registers, context: RefCell::new(context) }
     }
 }
 
-impl <'a, T> Bus for PpuBus<'a, T> where T: PpuRegistration {
+impl <'a> Bus for PpuBus<'a> {
     fn read(&self, address: u16) -> u8 {
-        self.ppu_registers.read(address)
+        self.registers.read(address)
     }
 
     fn write(&mut self, address: u16, data: u8) {
-        self.ppu_registers.write(address, data, &mut self.ppu_context.borrow_mut());
+        self.registers.write(address, data, &mut self.context.borrow_mut());
     }
 }

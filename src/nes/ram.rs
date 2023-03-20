@@ -1,3 +1,5 @@
+use std::ops::Range;
+
 pub struct Ram {
     data: Vec<u8>,
 }
@@ -7,10 +9,21 @@ impl <'a> Ram {
         Self { data: vec!(0; size.into()) }
     }
 
+    pub fn from_vec(data: Vec<u8>) -> Self {
+        Self { data }
+    }
+
     pub fn read(&'a self, address: u16) -> &'a u8 {
         match self.data.get(address as usize) {
             Some(data) => data,
             None => panic!("Out-of-range access to RAM. RAM size {:X} / address: {:X}", self.data.len(), address),
+        }
+    }
+
+    pub fn read_range(&'a self, range: Range<usize>) -> &'a [u8] {
+        match self.data.get(range.clone()) {
+            Some(data) => data,
+            None => panic!("Out-of-range access to RAM. RAM size {:X} / range: {:?}", self.data.len(), range),
         }
     }
 
@@ -38,6 +51,19 @@ mod ram_tests {
     fn outrange_read_should_panic_test() {
         let ram = Ram::new(1);
         ram.read(0x001);
+    }
+
+    #[test]
+    fn read_range_test() {
+        let ram = Ram::new(10);
+        assert_eq!(ram.read_range(0..2), &[0x00, 0x00]);
+    }
+
+    #[test]
+    #[should_panic]
+    fn outrange_read_range_should_panic_test() {
+        let ram = Ram::new(1);
+        ram.read_range(1..2);
     }
 
     #[test]
