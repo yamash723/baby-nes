@@ -42,7 +42,7 @@ impl PpuCtrl {
 
 #[cfg(test)]
 mod ppu_control_tests {
-    use crate::nes::ppu::registers::ppu_control::{PpuCtrl, BaseNameTableAddress};
+    use crate::nes::ppu::registers::ppu_control::{BaseNameTableAddress, PpuCtrl};
 
     #[test]
     fn should_get_base_name_table_address_test() {

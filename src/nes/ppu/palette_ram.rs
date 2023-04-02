@@ -1,7 +1,7 @@
 // Must be refactor
 
-use std::ops::Range;
 use crate::nes::ram::Ram;
+use std::ops::Range;
 
 use super::palette::PaletteGroup;
 

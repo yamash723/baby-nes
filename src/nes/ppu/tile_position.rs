@@ -1,5 +1,3 @@
-// Must be refactor
-
 #[derive(Debug)]
 pub struct TilePosition {
     pub x: u8,
@@ -8,10 +6,7 @@ pub struct TilePosition {
 
 impl TilePosition {
     pub fn new(x: u8, y: u8) -> Self {
-        TilePosition {
-            x,
-            y,
-        }
+        TilePosition { x, y }
     }
 
     pub fn get_tile_number(&self) -> u16 {
@@ -154,13 +149,14 @@ mod tile_position_test {
 
     #[test]
     fn get_attribute_id_test() {
-        let assert_attribute = |tile_range_x: Range<u8>, tile_range_y: Range<u8>, attribute_id: u8| {
-            for x in tile_range_x {
-                for y in tile_range_y.start..tile_range_y.end {
-                    assert_eq!(TilePosition::new(x, y).get_attribute_id(), attribute_id);
+        let assert_attribute =
+            |tile_range_x: Range<u8>, tile_range_y: Range<u8>, attribute_id: u8| {
+                for x in tile_range_x {
+                    for y in tile_range_y.start..tile_range_y.end {
+                        assert_eq!(TilePosition::new(x, y).get_attribute_id(), attribute_id);
+                    }
                 }
-            }
-        };
+            };
 
         // attribute: 0, block: 0, 1, 16, 17
         assert_attribute(0..4, 0..4, 0);

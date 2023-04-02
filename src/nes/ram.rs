@@ -4,9 +4,11 @@ pub struct Ram {
     data: Vec<u8>,
 }
 
-impl <'a> Ram {
+impl<'a> Ram {
     pub fn new(size: u16) -> Self {
-        Self { data: vec!(0; size.into()) }
+        Self {
+            data: vec![0; size.into()],
+        }
     }
 
     pub fn from_vec(data: Vec<u8>) -> Self {
@@ -16,21 +18,33 @@ impl <'a> Ram {
     pub fn read(&'a self, address: u16) -> &'a u8 {
         match self.data.get(address as usize) {
             Some(data) => data,
-            None => panic!("Out-of-range access to RAM. RAM size {:X} / address: {:X}", self.data.len(), address),
+            None => panic!(
+                "Out-of-range access to RAM. RAM size {:X} / address: {:X}",
+                self.data.len(),
+                address
+            ),
         }
     }
 
     pub fn read_range(&'a self, range: Range<usize>) -> &'a [u8] {
         match self.data.get(range.clone()) {
             Some(data) => data,
-            None => panic!("Out-of-range access to RAM. RAM size {:X} / range: {:?}", self.data.len(), range),
+            None => panic!(
+                "Out-of-range access to RAM. RAM size {:X} / range: {:?}",
+                self.data.len(),
+                range
+            ),
         }
     }
 
     pub fn write(&mut self, address: u16, value: u8) {
         match self.data.get_mut(address as usize) {
             Some(data) => *data = value,
-            None => panic!("Out-of-range access to RAM. RAM size {:X} / address: {:X}", self.data.len(), address),
+            None => panic!(
+                "Out-of-range access to RAM. RAM size {:X} / address: {:X}",
+                self.data.len(),
+                address
+            ),
         }
     }
 
@@ -42,7 +56,6 @@ impl <'a> Ram {
         self.data.clone()
     }
 }
-
 
 #[cfg(test)]
 mod ram_tests {

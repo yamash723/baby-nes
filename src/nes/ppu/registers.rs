@@ -1,16 +1,20 @@
 pub mod ppu_address;
-pub mod ppu_scroll;
 pub mod ppu_control;
-pub mod ppu_mask;
 pub mod ppu_data;
+pub mod ppu_mask;
+pub mod ppu_scroll;
 
-use self::{ppu_scroll::PpuScroll, ppu_address::PpuAddress, ppu_control::{PpuCtrl, BaseNameTableAddress}, ppu_mask::PpuMask, ppu_data::PpuData};
-
-use super::ppu::PpuContext;
+use self::{
+    ppu_address::PpuAddress,
+    ppu_control::{BaseNameTableAddress, PpuCtrl},
+    ppu_data::PpuData,
+    ppu_mask::PpuMask,
+    ppu_scroll::PpuScroll,
+};
 
 pub trait PpuRegistration {
     fn read(&self, address: u16) -> u8;
-    fn write(&mut self, address: u16, data: u8, ppu_context: &mut PpuContext);
+    fn write(&mut self, address: u16, data: u8);
 }
 
 pub struct PpuRegisters {
@@ -40,31 +44,8 @@ impl PpuRegisters {
         self.ppu_ctrl.base_name_table_address()
     }
 
-    fn increment_vram(&mut self) {
+    pub fn increment_vram(&mut self) {
         let offset = self.ppu_ctrl.get_vram_increment_offset();
         self.ppu_addr.increment(offset);
-    }
-}
-
-impl PpuRegistration for PpuRegisters {
-    fn read(&self, address: u16) -> u8 {
-        println!("PPU registers read | Address: {:x}", address);
-        unimplemented!();
-    }
-
-    fn write(&mut self, address: u16, data: u8, ppu_context: &mut PpuContext) {
-        println!("PPU registers write | Address: {:x} Data: {:x}", address, data);
-        match address {
-            0x0000 => self.ppu_ctrl = PpuCtrl::from_bits(data).unwrap(),
-            0x0001 => self.ppu_mask = PpuMask::from_bits(data).unwrap(),
-            0x0005 => self.ppu_scroll.write(data),
-            0x0006 => self.ppu_addr.write(data as u16),
-            0x0007 => {
-                let addr = self.ppu_addr.read();
-                self.ppu_data.write(addr, data, ppu_context);
-                self.increment_vram();
-            },
-            _ => panic!("unimplemented write address: {} / data: {}", address, data),
-        }
     }
 }

@@ -1,7 +1,7 @@
 // Must be refactor
 
-use std::slice::Iter;
 use super::tile::Tile;
+use std::slice::Iter;
 
 pub struct Background {
     tiles: Vec<Tile>,
@@ -9,9 +9,7 @@ pub struct Background {
 
 impl Background {
     pub fn new() -> Self {
-        Background {
-            tiles: Vec::new(),
-        }
+        Background { tiles: Vec::new() }
     }
 
     pub fn push(&mut self, tile: Tile) {

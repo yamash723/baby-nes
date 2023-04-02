@@ -1,15 +1,45 @@
 use crate::nes::bus::Bus;
 
-use super::{registers::{CpuRegisters, CpuStatusFlag}, opecode::{self, Code, AddressingMode}};
+use super::{
+    opecode::{self, AddressingMode, Code},
+    registers::{CpuRegisters, CpuStatusFlag},
+};
 
 pub struct Cpu<'a, T: Bus> {
     registers: &'a mut CpuRegisters,
     bus: &'a mut T,
 }
 
-impl <'a, T: Bus> Cpu<'a, T> {
-    pub fn new(registers: &'a mut CpuRegisters, bus: &'a mut T) -> Self {
+impl<'a, T: Bus> Cpu<'a, T> {
+    fn new(registers: &'a mut CpuRegisters, bus: &'a mut T) -> Self {
         Self { registers, bus }
+    }
+
+    pub fn run(cpu_register: &'a mut CpuRegisters, cpu_bus: &mut T) -> u16
+    where
+        T: Bus,
+    {
+        let mut cpu = Cpu::new(cpu_register, cpu_bus);
+
+        let instruction_code = &cpu.fetch();
+        let opecode = opecode::OPECODE_MAP.get(&instruction_code).unwrap();
+
+        println!("{:?} : {:?} : {:?}", &opecode.code, &opecode.mode, &opecode.cycle);
+
+        match opecode.code {
+            Code::LDA => &cpu.lda(&opecode.mode),
+            Code::LDX => &cpu.ldx(&opecode.mode),
+            Code::LDY => &cpu.ldy(&opecode.mode),
+            Code::BNE => &cpu.bne(&opecode.mode),
+            Code::DEY => &cpu.dey(),
+            Code::INX => &cpu.inx(),
+            Code::JMP => &cpu.jmp(&opecode.mode),
+            Code::SEI => &cpu.sei(),
+            Code::STA => &cpu.sta(&opecode.mode),
+            Code::TXS => &cpu.txs(),
+        };
+
+        opecode.cycle
     }
 
     fn fetch(&mut self) -> u8 {
@@ -38,27 +68,7 @@ impl <'a, T: Bus> Cpu<'a, T> {
         self.fetch_absolute() + self.registers.x as u16
     }
 
-    pub fn run(&mut self) {
-        let instruction_code = &self.fetch();
-        let opecode = opecode::OPECODE_MAP.get(&instruction_code).unwrap();
-
-        println!("{:?} : {:?} : {:?}", &opecode.code, &opecode.mode, &opecode.cycle);
-
-        match opecode.code {
-            Code::LDA => &self.lda(&opecode.mode),
-            Code::LDX => &self.ldx(&opecode.mode),
-            Code::LDY => &self.ldy(&opecode.mode),
-            Code::BNE => &self.bne(&opecode.mode),
-            Code::DEY => &self.dey(),
-            Code::INX => &self.inx(),
-            Code::JMP => &self.jmp(&opecode.mode),
-            Code::SEI => &self.sei(),
-            Code::STA => &self.sta(&opecode.mode),
-            Code::TXS => &self.txs(),
-        };
-    }
-
-    fn fetch_opecode(&mut self, mode: &AddressingMode) -> u8 { 
+    fn fetch_opecode(&mut self, mode: &AddressingMode) -> u8 {
         if mode == &AddressingMode::Immediate {
             return self.fetch();
         }
@@ -78,35 +88,40 @@ impl <'a, T: Bus> Cpu<'a, T> {
 
     fn lda(&mut self, mode: &AddressingMode) {
         self.registers.a = self.fetch_opecode(mode);
-        self.registers.update_zero_and_negative_flags(self.registers.a);
+        self.registers
+            .update_zero_and_negative_flags(self.registers.a);
     }
 
     fn ldx(&mut self, mode: &AddressingMode) {
         self.registers.x = self.fetch_opecode(mode);
-        self.registers.update_zero_and_negative_flags(self.registers.x);
+        self.registers
+            .update_zero_and_negative_flags(self.registers.x);
     }
 
     fn ldy(&mut self, mode: &AddressingMode) {
         self.registers.y = self.fetch_opecode(mode);
-        self.registers.update_zero_and_negative_flags(self.registers.y);
+        self.registers
+            .update_zero_and_negative_flags(self.registers.y);
     }
 
     fn bne(&mut self, mode: &AddressingMode) {
         let address = self.read_operand_address(mode);
 
-        if self.registers.p.contains(CpuStatusFlag::ZERO) {
+        if !self.registers.p.contains(CpuStatusFlag::ZERO) {
             self.registers.pc = address;
         }
     }
 
     fn dey(&mut self) {
         self.registers.y = self.registers.y.wrapping_sub(1);
-        self.registers.update_zero_and_negative_flags(self.registers.y);
+        self.registers
+            .update_zero_and_negative_flags(self.registers.y);
     }
 
     fn inx(&mut self) {
         self.registers.x = self.registers.x.wrapping_add(1);
-        self.registers.update_zero_and_negative_flags(self.registers.x);
+        self.registers
+            .update_zero_and_negative_flags(self.registers.x);
     }
 
     fn jmp(&mut self, mode: &AddressingMode) {
@@ -151,7 +166,9 @@ mod cpu_tests {
     fn fetch_should_increment_pc_test() {
         let mut registers = CpuRegisters::new();
 
-        let mut bus = MockBus { data: vec![1, 1, 10] };
+        let mut bus = MockBus {
+            data: vec![1, 1, 10],
+        };
         registers.pc = 2;
 
         let mut cpu = Cpu::new(&mut registers, &mut bus);

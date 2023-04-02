@@ -30,12 +30,18 @@ NES Emulator written in Rust.
   - Spriteの責務？パターンテーブルの責務？
   - 多分PPU？
 - [x] ここで一旦テストを通す
-- [ ] PPUのrunを作成
-- [ ] CPUのcycle考慮
-- [ ] Frameへの書き込みとRenderを追加
-- [ ] ここでHelloWorldが動くはず
-- [ ] 全体リファクタ
-  - 特に急エミュレーターからコピペしたとこ
-  - Ppu RegisterのR/WとPpuBusのR/Wの関係性とか
+- [x] PPUのrunを作成
+- [x] CPUのcycle考慮
+- [x] Frameへの書き込みとRenderを追加
+- [x] ここでHelloWorldが動くはず
+- [ ] 全体リファクタとかテストの追加
+  - [ ] 画面レンダリングを別ファイルへ（NES_COLORSも移動）
+  - [ ] CpuBusのテスト
+  - [ ] Cpuの各命令テスト
+  - [ ] CpuRegisterテスト
+  - [ ] PaletteRam見直し
+  - [ ] Palette見直し
+  - [ ] Ppuのbuild_tile見直し
+  - [ ] Ppuのwrite副作用テスト
 - [ ] CPUとにかく実装
   - 全部実装したらテストROM通す

@@ -6,8 +6,10 @@ pub mod cli;
 pub mod nes;
 pub mod ui;
 
-#[macro_use] extern crate anyhow;
-#[macro_use] extern crate arrayref;
+#[macro_use]
+extern crate anyhow;
+#[macro_use]
+extern crate arrayref;
 
 use nes::Nes;
 use sdl2::pixels::PixelFormatEnum;
@@ -35,7 +37,9 @@ fn main() {
     canvas.set_scale(SCALE, SCALE).unwrap();
 
     let creator = canvas.texture_creator();
-    let mut texture = creator.create_texture_target(PixelFormatEnum::RGB24, 256, 240).unwrap();
+    let mut texture = creator
+        .create_texture_target(PixelFormatEnum::RGB24, 256, 240)
+        .unwrap();
 
     // ------------------------------------------------------------
     // Initialize NES
@@ -48,7 +52,7 @@ fn main() {
         canvas.present();
     };
 
-    let input_callback= || {
+    let input_callback = || {
         for event in event_pump.poll_iter() {
             match event {
                 Event::Quit { .. }

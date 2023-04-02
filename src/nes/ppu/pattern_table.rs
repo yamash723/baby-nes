@@ -4,7 +4,7 @@ use crate::nes::ram::Ram;
 
 pub struct PatternTable(Ram);
 
-impl <'a> PatternTable {
+impl<'a> PatternTable {
     pub fn new(data: Ram) -> Result<Self> {
         if data.len() % 16 != 0 {
             return Err(anyhow!("PatternTable data must be multiple of 16."));
@@ -23,7 +23,11 @@ impl <'a> PatternTable {
 
     pub fn get_character_pattern(&'a self, index: usize) -> Result<&'a [u8]> {
         if self.0.len() < (index + 1) * 16 {
-            return Err(anyhow!("Out-of-range access to PatternTable. RAM size {} / index: {}", self.0.len() / 16, index));
+            return Err(anyhow!(
+                "Out-of-range access to PatternTable. RAM size {} / index: {}",
+                self.0.len() / 16,
+                index
+            ));
         }
 
         let start = index * 16;
@@ -51,22 +55,9 @@ mod pattern_table_test {
     fn get_character_pattern_test() {
         let pattern_data = vec![
             // channel 1
-            0b11111000,
-            0b11111000,
-            0b11111000,
-            0b11111000,
-            0b11111000,
-            0b00000000,
-            0b00000000,
-            0b00000000,
-            // channel 2
-            0b00000000,
-            0b00000000,
-            0b00000000,
-            0b00011111,
-            0b00011111,
-            0b00011111,
-            0b00011111,
+            0b11111000, 0b11111000, 0b11111000, 0b11111000, 0b11111000, 0b00000000, 0b00000000,
+            0b00000000, // channel 2
+            0b00000000, 0b00000000, 0b00000000, 0b00011111, 0b00011111, 0b00011111, 0b00011111,
             0b00011111,
         ];
 

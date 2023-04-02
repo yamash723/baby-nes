@@ -9,7 +9,7 @@ impl PpuScroll {
         Self {
             x: 0,
             y: 0,
-            write_target_is_x: true
+            write_target_is_x: true,
         }
     }
 
