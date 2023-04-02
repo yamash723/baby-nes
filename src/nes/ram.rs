@@ -33,6 +33,14 @@ impl <'a> Ram {
             None => panic!("Out-of-range access to RAM. RAM size {:X} / address: {:X}", self.data.len(), address),
         }
     }
+
+    pub fn len(&self) -> usize {
+        self.data.len()
+    }
+
+    pub fn to_vec(&self) -> Vec<u8> {
+        self.data.clone()
+    }
 }
 
 

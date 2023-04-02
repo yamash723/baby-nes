@@ -6,5 +6,6 @@ pub mod ppu;
 pub mod frame;
 pub mod palette;
 pub mod palette_ram;
+pub mod pattern_table;
 pub mod tile;
 pub mod tile_position;

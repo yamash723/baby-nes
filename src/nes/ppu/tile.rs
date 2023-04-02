@@ -1,7 +1,10 @@
 // Must be refactor
 
+use anyhow::Result;
+
+use super::pattern_table::PatternTable;
 use super::ppu::PpuContext;
-use super::sprite::Sprite;
+use super::sprite::{Sprite, build_sprite};
 use super::palette::PaletteGroup;
 use super::palette_ram::PaletteType;
 use super::tile_position::TilePosition;
@@ -14,7 +17,7 @@ pub struct Tile {
 }
 
 impl Tile {
-    pub fn build(position: TilePosition, ppu_context: &PpuContext) -> Tile {
+    pub fn build(position: TilePosition, ppu_context: &PpuContext) -> Result<Tile> {
         let attributes_id = position.get_attribute_id();
 
         // ToDo: refactoring here.
@@ -25,21 +28,76 @@ impl Tile {
         let palettes = ppu_context.palette_ram.get_palettes(palette_id, PaletteType::Background);
         let sprite_number = ppu_context.vram.read(position.get_tile_number() as u16);
 
-        let sprite = Sprite::build(sprite_number, &ppu_context.cram);
+        let sprite = Tile::build_sprite_with_index(*sprite_number, &ppu_context.pattern_table)?;
 
-        Tile {
+        Ok(Tile {
             sprite,
             position,
             palettes,
-        }
+        })
+    }
+
+    fn build_sprite_with_index(index: u8, pattern_table: &PatternTable) -> Result<Sprite> {
+        let pattern_data = pattern_table.get_character_pattern(index as usize)?;
+        build_sprite(pattern_data)
     }
 }
 
 #[cfg(test)]
 mod tile_test {
-    use crate::nes::{ppu::palette_ram::PaletteRam, ram::Ram};
+    use crate::nes::{ppu::{sprite::build_sprite, palette_ram::PaletteRam}, ram::Ram};
 
     use super::*;
+
+    #[test]
+    fn build_sprite_with_index_test() {
+        /* build a word 'H'
+        Sprite vector.
+        3 3 1 0 0 3 3 1
+        3 3 1 0 0 3 3 1
+        3 3 1 0 0 3 3 1
+        3 3 3 3 3 3 3 1
+        3 3 1 1 1 3 3 1
+        3 3 1 0 0 3 3 1
+        3 3 1 0 0 3 3 1
+        1 1 1 0 0 1 1 1
+        */
+
+        let word_vec = vec!(
+            // channel 1
+            0b11100111,
+            0b11100111,
+            0b11100111,
+            0b11111111,
+            0b11111111,
+            0b11100111,
+            0b11100111,
+            0b11100111,
+
+            // channel 2
+            0b11000110,
+            0b11000110,
+            0b11000110,
+            0b11111110,
+            0b11000110,
+            0b11000110,
+            0b11000110,
+            0b00000000,
+        );
+
+        let pattern_table = PatternTable::from_vec(word_vec.clone()).unwrap();
+        let result = Tile::build_sprite_with_index(0, &pattern_table).unwrap();
+
+        let expect = build_sprite(&word_vec).unwrap();
+        assert_eq!(result, expect);
+    }
+
+    #[test]
+    fn build_sprite_with_index_out_of_pattern_table_range_test() {
+        let pattern_table = PatternTable::from_vec(vec!(0; 16)).unwrap();
+        let result = Tile::build_sprite_with_index(1, &pattern_table);
+        assert!(result.is_err());
+    }
 
     #[test]
     fn build_test() {
@@ -61,7 +119,7 @@ mod tile_test {
         x: 0, y: 0
         */
 
-        let word_vec = [
+        let word_vec = vec!(
             // channel 1
             0b11100111,
             0b11100111,
@@ -81,11 +139,7 @@ mod tile_test {
             0b11000110,
             0b11000110,
             0b00000000,
-        ];
-
-        let mut character_rom = Vec::new();
-        character_rom.append(&mut word_vec.to_vec());
-        let mut cram = Ram::from_vec(character_rom.clone());
+        );
 
         // write a palette id: 0 in attribute id: 0
         let mut vram = Ram::new(0x0FFF);
@@ -99,16 +153,17 @@ mod tile_test {
         palette_ram.write(0x02, palette_numbers[2]);
         palette_ram.write(0x03, palette_numbers[3]);
 
+        let mut pattern_table = PatternTable::from_vec(word_vec.clone()).unwrap();
         let ppu_context = PpuContext {
-            pattern_table: &mut cram,
+            pattern_table: &mut pattern_table,
             vram: &mut vram,
             palette_ram: palette_ram,
         };
         let tile_pos = TilePosition::new(0, 0);
-        let tile = Tile::build(tile_pos, &ppu_context);
+        let tile = Tile::build(tile_pos, &ppu_context).unwrap();
 
         // Assert sprite
-        let expect_sprite = Sprite::build(0, &Ram::new(character_rom));
+        let expect_sprite = build_sprite(&word_vec).unwrap();
         assert_eq!(tile.sprite.to_vec(), expect_sprite.to_vec());
 
         // assert palettes

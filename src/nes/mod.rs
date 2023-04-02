@@ -1,7 +1,7 @@
 use core::time;
 use std::{fs::File, io::Read, thread};
 
-use self::{cartridge::Cartridge, cpu::{cpu::Cpu, registers::CpuRegisters, bus::CpuBus}, ram::Ram, ppu::{registers::PpuRegisters, bus::PpuBus, frame::Frame}};
+use self::{cartridge::Cartridge, cpu::{cpu::Cpu, registers::CpuRegisters, bus::CpuBus}, ram::Ram, ppu::{registers::PpuRegisters, bus::PpuBus, frame::Frame, pattern_table::PatternTable}};
 use anyhow::Result;
 
 pub mod cartridge;
@@ -42,7 +42,7 @@ impl Nes<PpuRegisters> {
         Fr: FnMut(&Frame) + 'call,
         Fi: FnMut() + 'call,
     {
-        let pattern_table = Ram::from_vec(self.cartridge.character_rom.clone());
+        let mut pattern_table = PatternTable::new(Ram::from_vec(self.cartridge.character_rom.clone())).unwrap();
         let mut ppu_bus = PpuBus::new(&mut self.ppu_registers, &mut pattern_table, &mut self.vram);
         let mut cpu_bus = CpuBus::new(&self.cartridge.program_rom, &mut self.wram, &mut ppu_bus);
         let mut cpu = Cpu::new(&mut self.cpu_registers, &mut cpu_bus);

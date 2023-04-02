@@ -2,7 +2,7 @@ use std::{cell::RefCell};
 
 use crate::nes::{ram::Ram, bus::Bus};
 
-use super::{registers::{PpuRegistration, PpuRegisters}, ppu::PpuContext, palette_ram::PaletteRam};
+use super::{registers::{PpuRegistration, PpuRegisters}, ppu::PpuContext, palette_ram::PaletteRam, pattern_table::PatternTable};
 
 pub struct PpuBus<'a> {
     pub registers: &'a mut PpuRegisters,
@@ -10,7 +10,7 @@ pub struct PpuBus<'a> {
 }
 
 impl <'a> PpuBus<'a> {
-    pub fn new(registers: &'a mut PpuRegisters , pattern_table: &'a mut Ram, vram: &'a mut Ram) -> Self {
+    pub fn new(registers: &'a mut PpuRegisters , pattern_table: &'a mut PatternTable, vram: &'a mut Ram) -> Self {
         let context = PpuContext {
             pattern_table,
             vram,

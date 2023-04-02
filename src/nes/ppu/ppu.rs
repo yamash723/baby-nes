@@ -2,7 +2,7 @@
 
 use crate::nes::{ram::Ram, bus::Bus};
 
-use super::{palette_ram::PaletteRam, background::Background, registers::{PpuRegisters, PpuRegistration}, bus::PpuBus, tile_position::TilePosition};
+use super::{palette_ram::PaletteRam, background::Background, bus::PpuBus, tile_position::TilePosition, tile::Tile, pattern_table::PatternTable};
 
 pub struct Ppu<'a> {
     pub cycle: usize,
@@ -12,7 +12,7 @@ pub struct Ppu<'a> {
 }
 
 pub struct PpuContext<'a> {
-    pub pattern_table: &'a mut Ram,
+    pub pattern_table: &'a mut PatternTable,
     pub vram: &'a mut Ram,
     pub palette_ram: PaletteRam,
 }
@@ -26,12 +26,12 @@ pub enum PpuRunResult {
 }
 
 impl <'a> Ppu<'a> {
-    pub fn new(ppu_bus: &mut PpuBus) -> Self {
+    pub fn new(ppu_bus: &'a mut PpuBus<'a>) -> Self {
         Ppu {
             cycle: 0,
             line: 0,
             background: Background::new(),
-            ppu_bus: ppu_bus,
+            ppu_bus,
         }
     }
 
@@ -79,13 +79,13 @@ impl <'a> Ppu<'a> {
 
             // borrowで無理やりやってるので治す
             let nametable_id = self.ppu_bus.registers.get_nametable_address();
-            let pos_x_start = (nametable_id.into() % 2) * 32;
+            let pos_x_start = (nametable_id as u16 % 2) * 32;
             let pos_x_end = pos_x_start + 32;
             let pos_y = (self.line / 8) as u8;
 
             for pos_x in pos_x_start..pos_x_end {
-                let tile_pos = TilePosition::new(pos_x, pos_y);
-                let tile = Tile::build(tile_pos, &self.context);
+                let tile_pos = TilePosition::new(pos_x as u8, pos_y);
+                let tile = Tile::build(tile_pos, &self.ppu_bus.context.borrow()).unwrap();
                 self.background.push(tile);
             }
         }
