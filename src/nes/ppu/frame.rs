@@ -29,6 +29,11 @@ impl Frame {
             self.data[base + 2] = rgb.2;
         }
     }
+
+    pub fn get_pixel(&self, x: usize, y: usize) -> (u8, u8, u8) {
+        let base = y * 3 * Frame::WIDTH + x * 3;
+        (self.data[base], self.data[base + 1], self.data[base + 2])
+    }
 }
 
 #[cfg(test)]
@@ -47,5 +52,17 @@ mod tests {
         assert_eq!(frame.data[20 * 3 * Frame::WIDTH + 10 * 3], 255);
         assert_eq!(frame.data[20 * 3 * Frame::WIDTH + 10 * 3 + 1], 0);
         assert_eq!(frame.data[20 * 3 * Frame::WIDTH + 10 * 3 + 2], 0);
+    }
+
+    #[test]
+    fn test_get_pixel() {
+        let mut frame = Frame::new();
+        frame.set_pixel(10, 20, (255, 200, 100));
+
+        let pixel = frame.get_pixel(10, 20);
+
+        assert_eq!(pixel.0, 255);
+        assert_eq!(pixel.1, 200);
+        assert_eq!(pixel.2, 100);
     }
 }

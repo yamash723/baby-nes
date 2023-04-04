@@ -7,7 +7,7 @@ use super::{
     registers::{PpuRegisters, PpuRegistration},
     sprite::{build_sprite, Sprite},
     tile::Tile,
-    tile_position::TilePosition,
+    tile_position::TilePosition, render::RenderContext,
 };
 use crate::nes::{
     ppu::registers::{ppu_control::PpuCtrl, ppu_mask::PpuMask},
@@ -160,6 +160,12 @@ impl PpuRegistration for Ppu {
             }
             _ => panic!("unimplemented write address: {} / data: {}", address, data),
         }
+    }
+}
+
+impl <'a>RenderContext<'a> for Ppu {
+    fn get_background(&'a self) -> &'a Background {
+        &self.background
     }
 }
 

@@ -8,3 +8,4 @@ pub mod pattern_table;
 pub mod ppu;
 pub mod tile;
 pub mod tile_position;
+pub mod render;
