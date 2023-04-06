@@ -44,7 +44,7 @@ fn main() {
     // ------------------------------------------------------------
     // Initialize NES
     // ------------------------------------------------------------
-    let mut nes = Nes::new("rom/nestest.nes").unwrap();
+    let mut nes = Nes::new("rom/hello_world.nes").unwrap();
 
     let render_callback = move |frame: &Frame| {
         texture.update(None, &frame.data, 256 * 3).unwrap();
