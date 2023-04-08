@@ -17,174 +17,100 @@ pub fn ldy<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode) 
 
 #[cfg(test)]
 mod store_tests {
-  use crate::nes::{cpu::{registers::{CpuRegisters, CpuStatusFlag}, opecode::AddressingMode}, bus::Bus};
+  use crate::nes::{cpu::{registers::{CpuRegisters, CpuStatusFlag}, opecode::AddressingMode, instructions::instructions_test::MockBus}, bus::Bus};
 
   use super::*;
 
-  struct MockBus {
-    data: Vec<u8>,
-  }
-
-  impl MockBus {
-    fn new() -> Self {
-      Self { data: vec![0; 0xFFFF] }
-    }
-  }
-
-  impl Bus for MockBus {
-    fn read(&self, address: u16) -> u8 {
-      self.data[address as usize]
+  #[test]
+  fn lda_test() {
+    struct State {
+      pub pc: u16,
+      pub data: u8,
+      pub expect_a: u8,
+      pub expect_zero: bool,
+      pub expect_negative: bool,
     }
 
-    fn write(&mut self, address: u16, data: u8) {
-      self.data[address as usize] = data;
-    }
-  }
+    let patterns = vec![
+      State { pc: 0x0005, data: 0x01, expect_a: 0x01, expect_zero: false, expect_negative: false },
+      State { pc: 0x0005, data: 0x00, expect_a: 0x00, expect_zero: true, expect_negative: false },
+      State { pc: 0x0005, data: 0x80, expect_a: 0x80, expect_zero: false, expect_negative: true },
+    ];
 
-  mod lda {
-    use super::*;
-
-    #[test]
-    fn lda_test() {
+    for state in patterns {
       let mut bus = MockBus::new();
       let mut registers = CpuRegisters::new();
 
-      bus.write(0x0005, 0x01);
-      registers.pc = 0x0005;
+      bus.write(state.pc, state.data);
+      registers.pc = state.pc;
 
       lda(&mut bus, &mut registers, &AddressingMode::Immediate);
 
-      assert_eq!(registers.a, 0x01);
-      assert!(!registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(!registers.p.contains(CpuStatusFlag::NEGATIVE));
-    }
-
-    #[test]
-    fn lda_zero_flag_test() {
-      let mut bus = MockBus::new();
-      let mut registers = CpuRegisters::new();
-
-      bus.write(0x0005, 0x00);
-      registers.pc = 0x0005;
-
-      lda(&mut bus, &mut registers, &AddressingMode::Immediate);
-
-      assert_eq!(registers.a, 0x00);
-      assert!(registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(!registers.p.contains(CpuStatusFlag::NEGATIVE));
-    }
-
-    #[test]
-    fn lda_negative_flag_test() {
-      let mut bus = MockBus::new();
-      let mut registers = CpuRegisters::new();
-
-      bus.write(0x0005, 0xFF);
-      registers.pc = 0x0005;
-
-      lda(&mut bus, &mut registers, &AddressingMode::Immediate);
-
-      assert_eq!(registers.a, 0xFF);
-      assert!(!registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(registers.p.contains(CpuStatusFlag::NEGATIVE));
+      assert_eq!(registers.a, state.expect_a);
+      assert_eq!(registers.p.contains(CpuStatusFlag::ZERO), state.expect_zero);
+      assert_eq!(registers.p.contains(CpuStatusFlag::NEGATIVE), state.expect_negative);
     }
   }
 
-  mod ldx {
-    use super::*;
-
-    #[test]
-    fn ldx_test() {
-      let mut bus = MockBus::new();
-      let mut registers = CpuRegisters::new();
-
-      bus.write(0x0005, 0x01);
-      registers.pc = 0x0005;
-
-      ldx(&mut bus, &mut registers, &AddressingMode::Immediate);
-
-      assert_eq!(registers.x, 0x01);
-      assert!(!registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(!registers.p.contains(CpuStatusFlag::NEGATIVE));
+  #[test]
+  fn ldx_test() {
+    struct State {
+      pub pc: u16,
+      pub data: u8,
+      pub expect_x: u8,
+      pub expect_zero: bool,
+      pub expect_negative: bool,
     }
 
-    #[test]
-    fn ldx_zero_flag_test() {
+    let patterns = vec![
+      State { pc: 0x0005, data: 0x01, expect_x: 0x01, expect_zero: false, expect_negative: false },
+      State { pc: 0x0005, data: 0x00, expect_x: 0x00, expect_zero: true, expect_negative: false },
+      State { pc: 0x0005, data: 0x80, expect_x: 0x80, expect_zero: false, expect_negative: true },
+    ];
+
+    for state in patterns {
       let mut bus = MockBus::new();
       let mut registers = CpuRegisters::new();
 
-      bus.write(0x0005, 0x00);
-      registers.pc = 0x0005;
+      bus.write(state.pc, state.data);
+      registers.pc = state.pc;
 
       ldx(&mut bus, &mut registers, &AddressingMode::Immediate);
 
-      assert_eq!(registers.x, 0x00);
-      assert!(registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(!registers.p.contains(CpuStatusFlag::NEGATIVE));
-    }
-
-    #[test]
-    fn ldx_negative_flag_test() {
-      let mut bus = MockBus::new();
-      let mut registers = CpuRegisters::new();
-
-      bus.write(0x0005, 0xFF);
-      registers.pc = 0x0005;
-
-      ldx(&mut bus, &mut registers, &AddressingMode::Immediate);
-
-      assert_eq!(registers.x, 0xFF);
-      assert!(!registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(registers.p.contains(CpuStatusFlag::NEGATIVE));
+      assert_eq!(registers.x, state.expect_x);
+      assert_eq!(registers.p.contains(CpuStatusFlag::ZERO), state.expect_zero);
+      assert_eq!(registers.p.contains(CpuStatusFlag::NEGATIVE), state.expect_negative);
     }
   }
 
-  mod ldy {
-    use super::*;
-
-    #[test]
-    fn ldy_test() {
-      let mut bus = MockBus::new();
-      let mut registers = CpuRegisters::new();
-
-      bus.write(0x0005, 0x01);
-      registers.pc = 0x0005;
-
-      ldy(&mut bus, &mut registers, &AddressingMode::Immediate);
-
-      assert_eq!(registers.y, 0x01);
-      assert!(!registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(!registers.p.contains(CpuStatusFlag::NEGATIVE));
+  #[test]
+  fn ldy_test() {
+    struct State {
+      pub pc: u16,
+      pub data: u8,
+      pub expect_y: u8,
+      pub expect_zero: bool,
+      pub expect_negative: bool,
     }
 
-    #[test]
-    fn ldy_zero_flag_test() {
+    let patterns = vec![
+      State { pc: 0x0005, data: 0x01, expect_y: 0x01, expect_zero: false, expect_negative: false },
+      State { pc: 0x0005, data: 0x00, expect_y: 0x00, expect_zero: true, expect_negative: false },
+      State { pc: 0x0005, data: 0x80, expect_y: 0x80, expect_zero: false, expect_negative: true },
+    ];
+
+    for state in patterns {
       let mut bus = MockBus::new();
       let mut registers = CpuRegisters::new();
 
-      bus.write(0x0005, 0x00);
-      registers.pc = 0x0005;
+      bus.write(state.pc, state.data);
+      registers.pc = state.pc;
 
       ldy(&mut bus, &mut registers, &AddressingMode::Immediate);
 
-      assert_eq!(registers.y, 0x00);
-      assert!(registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(!registers.p.contains(CpuStatusFlag::NEGATIVE));
-    }
-
-    #[test]
-    fn ldy_negative_flag_test() {
-      let mut bus = MockBus::new();
-      let mut registers = CpuRegisters::new();
-
-      bus.write(0x0005, 0xFF);
-      registers.pc = 0x0005;
-
-      ldy(&mut bus, &mut registers, &AddressingMode::Immediate);
-
-      assert_eq!(registers.y, 0xFF);
-      assert!(!registers.p.contains(CpuStatusFlag::ZERO));
-      assert!(registers.p.contains(CpuStatusFlag::NEGATIVE));
+      assert_eq!(registers.y, state.expect_y);
+      assert_eq!(registers.p.contains(CpuStatusFlag::ZERO), state.expect_zero);
+      assert_eq!(registers.p.contains(CpuStatusFlag::NEGATIVE), state.expect_negative);
     }
   }
 }

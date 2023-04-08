@@ -10,65 +10,37 @@ pub fn bne<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode) 
 
 #[cfg(test)]
 mod branch_tests {
-  use crate::nes::{cpu::{registers::{CpuRegisters, CpuStatusFlag}, opecode::AddressingMode}, bus::Bus};
+  use crate::nes::{cpu::{registers::{CpuRegisters, CpuStatusFlag}, opecode::AddressingMode, instructions::instructions_test::MockBus}, bus::Bus};
 
   use super::*;
 
-  struct MockBus {
-    data: Vec<u8>,
-  }
-
-  impl MockBus {
-    fn new() -> Self {
-      Self { data: vec![0; 0xFFFF] }
-    }
-  }
-
-  impl Bus for MockBus {
-    fn read(&self, address: u16) -> u8 {
-      self.data[address as usize]
+  #[test]
+  fn bne_test() {
+    struct State {
+      pub pc: u16,
+      pub data: u8,
+      pub is_set_zero_flg: bool,
+      pub expect_pc: u16,
     }
 
-    fn write(&mut self, address: u16, data: u8) {
-      self.data[address as usize] = data;
-    }
-  }
+    let patterns = vec![
+      // BNE should be executed when zero flag is not set. (increment pc & add data)
+      State { pc: 0x0005, data: 0x50, is_set_zero_flg: false, expect_pc: 0x0005 + 1 + 0x0050 },
+      // BNE should not be executed when zero flag is set. (increment pc only)
+      State { pc: 0x0005, data: 0x50, is_set_zero_flg: true, expect_pc: 0x0005 + 1 },
+    ];
 
-  mod bne {
-    use super::*;
-
-    #[test]
-    fn bne_test() {
+    for state in patterns {
       let mut bus = MockBus::new();
       let mut registers = CpuRegisters::new();
 
-      bus.write(0x0005, 0x50);
-      registers.pc = 0x0005;
-      registers.p.remove(CpuStatusFlag::ZERO);
+      bus.write(state.pc, state.data);
+      registers.pc = state.pc;
+      registers.p.set(CpuStatusFlag::ZERO, state.is_set_zero_flg);
 
       bne(&mut bus, &mut registers, &AddressingMode::Relative);
 
-      // Program counter should be incremented by 1 + 0x0050
-      let expect = 0x0005 + 1 + 0x0050;
-
-      assert_eq!(registers.pc, expect);
-    }
-
-    #[test]
-    fn bne_not_set_test() {
-      let mut bus = MockBus::new();
-      let mut registers = CpuRegisters::new();
-
-      bus.write(0x0005, 0x50);
-      registers.pc = 0x0005;
-      registers.p.insert(CpuStatusFlag::ZERO);
-
-      bne(&mut bus, &mut registers, &AddressingMode::Relative);
-
-      // Program counter should be incremented by 1
-      let expect = 0x0005 + 1;
-
-      assert_eq!(registers.pc, expect);
+      assert_eq!(registers.pc, state.expect_pc);
     }
   }
 }
