@@ -5,9 +5,10 @@ use super::{
     palette_ram::{PaletteRam, PaletteType},
     pattern_table::PatternTable,
     registers::{PpuRegisters, PpuRegistration},
+    render::RenderContext,
     sprite::{build_sprite, Sprite},
     tile::Tile,
-    tile_position::TilePosition, render::RenderContext,
+    tile_position::TilePosition,
 };
 use crate::nes::{
     ppu::registers::{ppu_control::PpuCtrl, ppu_mask::PpuMask},
@@ -163,7 +164,7 @@ impl PpuRegistration for Ppu {
     }
 }
 
-impl <'a>RenderContext<'a> for Ppu {
+impl<'a> RenderContext<'a> for Ppu {
     fn get_background(&'a self) -> &'a Background {
         &self.background
     }

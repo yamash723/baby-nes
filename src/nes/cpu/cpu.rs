@@ -1,8 +1,9 @@
 use crate::nes::{bus::Bus, cpu::instructions};
 
 use super::{
+    fetch,
     opecode::{self, Code},
-    registers::{CpuRegisters}, fetch,
+    registers::CpuRegisters,
 };
 
 pub struct Cpu<'a, T: Bus> {
@@ -24,7 +25,10 @@ impl<'a, T: Bus> Cpu<'a, T> {
         let instruction_code = fetch::fetch(cpu.bus, cpu.registers);
         let opecode = opecode::OPECODE_MAP.get(&instruction_code).unwrap();
 
-        println!("{:?} : {:?} : {:?}", &opecode.code, &opecode.mode, &opecode.cycle);
+        println!(
+            "{:?} : {:?} : {:?}",
+            &opecode.code, &opecode.mode, &opecode.cycle
+        );
 
         match opecode.code {
             // ref: https://www.nesdev.org/obelisk-6502-guide/instructions.html
@@ -46,7 +50,10 @@ impl<'a, T: Bus> Cpu<'a, T> {
 
 #[cfg(test)]
 mod cpu_tests {
-    use crate::nes::{bus::Bus, cpu::{registers::CpuRegisters, fetch}};
+    use crate::nes::{
+        bus::Bus,
+        cpu::{fetch, registers::CpuRegisters},
+    };
 
     use super::Cpu;
 

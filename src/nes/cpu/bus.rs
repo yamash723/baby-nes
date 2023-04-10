@@ -32,18 +32,18 @@ where
                 // 0x1800..=0x1FFF => Mirrors of 0x0000..=0x07FF
                 let calibrated_address = address % 0x0800;
                 *self.wram.read(calibrated_address)
-            },
+            }
             0x2000..=0x3FFF => {
                 // 0x2000..=0x2007 => access to PPU registers.
                 // 0x2008..=0x3FFF => Mirror of 0x2000..=0x2007  every 8 bytes.
                 let calibrated_address = (address - 0x2000) % 8;
                 self.ppu.read(calibrated_address)
-            },
+            }
             // 0x4000..0x401F => unimplemented!(), // APU I/O Keypad
             // 0x4020..0x5FFF => unimplemented!(), // Expansion Rom
             // 0x6000..0x7FFF => unimplemented!(), // Expansion Ram
             0x8000..=0xBFFF => *self.program_rom.get((address - 0x8000) as usize).unwrap(),
-            0xC000..=0xFFFF  => {
+            0xC000..=0xFFFF => {
                 // if program rom sie is 16kb, mirror 0x8000..=0xBFFF
                 let calibrated_address = if self.program_rom.len() <= 0x4000 {
                     // Mirror
@@ -54,7 +54,7 @@ where
                 };
 
                 *self.program_rom.get(calibrated_address as usize).unwrap()
-            },
+            }
             _ => panic!("unexpected memory area access! Addr: {:x}", address),
         }
     }
@@ -69,13 +69,13 @@ where
                 // 0x1800..=0x1FFF => Mirrors of 0x0000..=0x07FF
                 let calibrated_address = address % 0x0800;
                 self.wram.write(calibrated_address, data.into());
-            },
+            }
             0x2000..=0x3FFF => {
                 // 0x2000..=0x2007 => access to PPU registers.
                 // 0x2008..=0x3FFF => Mirror of 0x2000..=0x2007  every 8 bytes.
                 let calibrated_address = (address - 0x2000) % 8;
                 self.ppu.write(calibrated_address, data);
-            },
+            }
             // 0x4000..0x401F => unimplemented!(), // APU I/O Keypad
             // 0x4020..0x5FFF => unimplemented!(), // Expansion Rom
             // 0x6000..0x7FFF => unimplemented!(), // Expansion Ram
@@ -114,7 +114,7 @@ mod cpu_bus_test {
     }
 
     mod read_test {
-        use crate::nes::{ram::Ram, cpu::bus::CpuBus, bus::Bus, ppu::registers::PpuRegistration};
+        use crate::nes::{bus::Bus, cpu::bus::CpuBus, ppu::registers::PpuRegistration, ram::Ram};
 
         #[test]
         fn vram_range_read_test() {
@@ -125,11 +125,7 @@ mod cpu_bus_test {
             wram.write(0x0000, 0x01);
             wram.write(0x07FF, 0x02);
 
-            let bus = CpuBus::new(
-                &program_rom,
-                &mut wram,
-                &mut ppu,
-            );
+            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read RAM
             assert_eq!(bus.read(0x0000), 0x01);
@@ -154,11 +150,7 @@ mod cpu_bus_test {
             ppu.write(0x0000, 0x01);
             ppu.write(0x0007, 0x02);
 
-            let bus = CpuBus::new(
-                &program_rom,
-                &mut wram,
-                &mut ppu,
-            );
+            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read PPU
             assert_eq!(bus.read(0x2000), 0x01);
@@ -185,11 +177,7 @@ mod cpu_bus_test {
             program_rom[0x4000] = 0x03;
             program_rom[0x7FFF] = 0x04;
 
-            let bus = CpuBus::new(
-                &program_rom,
-                &mut wram,
-                &mut ppu,
-            );
+            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read Program ROM
             assert_eq!(bus.read(0x8000), 0x01);
@@ -207,11 +195,7 @@ mod cpu_bus_test {
             program_rom[0x0000] = 0x01;
             program_rom[0x3FFF] = 0x02;
 
-            let bus = CpuBus::new(
-                &program_rom,
-                &mut wram,
-                &mut ppu,
-            );
+            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read Program ROM
             assert_eq!(bus.read(0x8000), 0x01);
@@ -223,7 +207,7 @@ mod cpu_bus_test {
     }
 
     mod write_test {
-        use crate::nes::{ram::Ram, cpu::bus::CpuBus, bus::Bus};
+        use crate::nes::{bus::Bus, cpu::bus::CpuBus, ram::Ram};
 
         #[test]
         fn vram_range_write_test() {
@@ -231,11 +215,7 @@ mod cpu_bus_test {
             let mut ppu = super::MockPpu::new();
             let mut wram = Ram::new(0x0800);
 
-            let mut bus = CpuBus::new(
-                &program_rom,
-                &mut wram,
-                &mut ppu,
-            );
+            let mut bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Write RAM
             bus.write(0x0000, 0x01);
@@ -265,11 +245,7 @@ mod cpu_bus_test {
             let mut wram = Ram::new(0x0800);
             let mut ppu = super::MockPpu::new();
 
-            let mut bus = CpuBus::new(
-                &program_rom,
-                &mut wram,
-                &mut ppu,
-            );
+            let mut bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Write PPU
             bus.write(0x2000, 0x01);

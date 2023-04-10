@@ -1,11 +1,11 @@
 pub mod background;
-pub mod registers;
-pub mod sprite;
 pub mod frame;
 pub mod palette;
 pub mod palette_ram;
 pub mod pattern_table;
 pub mod ppu;
+pub mod registers;
+pub mod render;
+pub mod sprite;
 pub mod tile;
 pub mod tile_position;
-pub mod render;

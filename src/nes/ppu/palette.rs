@@ -1,5 +1,3 @@
-// Must be refactor
-
 #[derive(Debug)]
 pub struct Palette(u8);
 
