@@ -27,16 +27,30 @@ pub enum AddressingMode {
 
 #[derive(Debug)]
 pub enum Code {
-    BNE,
-    DEY,
-    INX,
-    JMP,
+    // Load
     LDA,
     LDX,
     LDY,
-    SEI,
+    // Store
     STA,
+    STX,
+    STY,
+    // Transfer
+    // Stack
     TXS,
+    // Logical
+    // Arithmetic
+    // Increment
+    INX,
+    // Decrement
+    DEY,
+    // Jump
+    JMP,
+    // Branches
+    BNE,
+    // Flags
+    SEI,
+    // System
 }
 
 #[rustfmt::skip]

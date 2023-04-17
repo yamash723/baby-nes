@@ -32,16 +32,75 @@ impl<'a, T: Bus> Cpu<'a, T> {
 
         match opecode.code {
             // ref: https://www.nesdev.org/obelisk-6502-guide/instructions.html
+            // -- Load --
             Code::LDA => instructions::load::lda(cpu.bus, cpu.registers, &opecode.mode),
             Code::LDX => instructions::load::ldx(cpu.bus, cpu.registers, &opecode.mode),
             Code::LDY => instructions::load::ldy(cpu.bus, cpu.registers, &opecode.mode),
+            // -- Store --
             Code::STA => instructions::store::sta(cpu.bus, cpu.registers, &opecode.mode),
-            Code::BNE => instructions::branch::bne(cpu.bus, cpu.registers, &opecode.mode),
-            Code::DEY => instructions::decrement::dey(cpu.registers),
-            Code::INX => instructions::increment::inx(cpu.registers),
-            Code::JMP => instructions::jump::jmp(cpu.bus, cpu.registers, &opecode.mode),
-            Code::SEI => instructions::flags::sei(cpu.registers),
+            Code::STX => instructions::store::stx(cpu.bus, cpu.registers, &opecode.mode),
+            Code::STY => instructions::store::sty(cpu.bus, cpu.registers, &opecode.mode),
+            // -- Transfer --
+            // Code::TAX
+            // Code::TAY
+            // Code::TXA
+            // Code::TYA
+            // -- Stack --
             Code::TXS => instructions::transfer::txs(cpu.registers),
+            // Code::TSX
+            // Code::PHA
+            // Code::PHP
+            // Code::PLA
+            // Code::PLP
+            // -- Logical --
+            // Code::AND
+            // Code::EOR
+            // Code::ORA
+            // Code::BIT
+            // -- Arithmetic --
+            // Code::ADC
+            // Code::SBC
+            // Code::CMP
+            // Code::CPX
+            // Code::CPY
+            // -- Increment --
+            // Code::INC
+            Code::INX => instructions::increment::inx(cpu.registers),
+            // Code::INY
+            // -- Decrement --
+            Code::DEY => instructions::decrement::dey(cpu.registers),
+            // Code::DEX
+            // Code::DEC
+            // -- Shift --
+            // Code::ASL
+            // Code::LSR
+            // Code::ROL
+            // Code::ROR
+            // -- Jump --
+            Code::JMP => instructions::jump::jmp(cpu.bus, cpu.registers, &opecode.mode),
+            // Code::JSR
+            // Code::RTS
+            // -- Branches --
+            Code::BNE => instructions::branch::bne(cpu.bus, cpu.registers, &opecode.mode),
+            // Code::BCC
+            // Code::BCS
+            // Code::BEQ
+            // Code::BMI
+            // Code::BPL
+            // Code::BVC
+            // Code::BVS
+            // -- Flags --
+            // Code::CLC
+            // Code::CLD
+            // Code::CLI
+            // Code::CLV
+            // Code::SEC
+            // Code::SED
+            Code::SEI => instructions::flags::sei(cpu.registers),
+            // -- System --
+            // Code::BRK
+            // Code::NOP
+            // Code::RTI
         };
 
         opecode.cycle
