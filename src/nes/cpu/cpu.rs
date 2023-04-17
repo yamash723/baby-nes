@@ -41,12 +41,12 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::STX => instructions::store::stx(cpu.bus, cpu.registers, &opecode.mode),
             Code::STY => instructions::store::sty(cpu.bus, cpu.registers, &opecode.mode),
             // -- Transfer --
-            // Code::TAX
-            // Code::TAY
-            // Code::TXA
-            // Code::TYA
+            Code::TAX => instructions::transfer::tax(cpu.registers),
+            Code::TAY => instructions::transfer::tay(cpu.registers),
+            Code::TXA => instructions::transfer::txa(cpu.registers),
+            Code::TYA => instructions::transfer::tya(cpu.registers),
             // -- Stack --
-            Code::TXS => instructions::transfer::txs(cpu.registers),
+            Code::TXS => instructions::stack::txs(cpu.registers),
             // Code::TSX
             // Code::PHA
             // Code::PHP

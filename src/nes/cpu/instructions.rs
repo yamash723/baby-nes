@@ -5,6 +5,7 @@ pub(super) mod increment;
 pub(super) mod jump;
 pub(super) mod load;
 pub(super) mod store;
+pub(super) mod stack;
 pub(super) mod transfer;
 
 #[cfg(test)]

@@ -36,6 +36,10 @@ pub enum Code {
     STX,
     STY,
     // Transfer
+    TAX,
+    TAY,
+    TXA,
+    TYA,
     // Stack
     TXS,
     // Logical
