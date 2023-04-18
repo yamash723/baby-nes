@@ -64,9 +64,9 @@ impl<'a, T: Bus> Cpu<'a, T> {
             // Code::CPX
             // Code::CPY
             // -- Increment --
-            // Code::INC
+            Code::INC => instructions::increment::inc(cpu.bus, cpu.registers, &opecode.mode),
             Code::INX => instructions::increment::inx(cpu.registers),
-            // Code::INY
+            Code::INY => instructions::increment::iny(cpu.registers),
             // -- Decrement --
             Code::DEY => instructions::decrement::dey(cpu.registers),
             // Code::DEX

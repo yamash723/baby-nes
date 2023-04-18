@@ -50,7 +50,9 @@ pub enum Code {
     // Logical
     // Arithmetic
     // Increment
+    INC,
     INX,
+    INY,
     // Decrement
     DEY,
     // Jump

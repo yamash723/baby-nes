@@ -40,6 +40,7 @@ where
     fetch_absolute(bus, registers) + registers.x as u16
 }
 
+// ToDo: read_operand_addressとの使い分けが微妙
 pub fn fetch_operand<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode) -> u8
 where
     T: Bus,
@@ -61,6 +62,7 @@ where
     T: Bus,
 {
     match mode {
+        AddressingMode::Immediate => fetch(bus, registers) as u16,
         AddressingMode::Absolute => fetch_absolute(bus, registers),
         AddressingMode::AbsoluteIndexedX => fetch_absolute_x(bus, registers),
         AddressingMode::Relative => fetch_relative(bus, registers),
