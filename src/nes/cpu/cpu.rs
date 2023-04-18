@@ -46,12 +46,12 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::TXA => instructions::transfer::txa(cpu.registers),
             Code::TYA => instructions::transfer::tya(cpu.registers),
             // -- Stack --
+            Code::TSX => instructions::stack::tsx(cpu.registers),
             Code::TXS => instructions::stack::txs(cpu.registers),
-            // Code::TSX
-            // Code::PHA
-            // Code::PHP
-            // Code::PLA
-            // Code::PLP
+            Code::PHA => instructions::stack::pha(cpu.bus, cpu.registers),
+            Code::PHP => instructions::stack::php(cpu.bus, cpu.registers),
+            Code::PLA => instructions::stack::pla(cpu.bus, cpu.registers),
+            Code::PLP => instructions::stack::plp(cpu.bus, cpu.registers),
             // -- Logical --
             // Code::AND
             // Code::EOR

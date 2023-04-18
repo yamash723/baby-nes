@@ -63,22 +63,11 @@ mod registers_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                data: 0x10,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                data: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                data: 0x80,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { data: 0x10, expect_zero: false, expect_negative: false },
+            State { data: 0x00, expect_zero: true,  expect_negative: false },
+            State { data: 0x80, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {

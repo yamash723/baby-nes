@@ -41,7 +41,12 @@ pub enum Code {
     TXA,
     TYA,
     // Stack
+    TSX,
     TXS,
+    PHA,
+    PHP,
+    PLA,
+    PLP,
     // Logical
     // Arithmetic
     // Increment

@@ -7,7 +7,7 @@ pub fn lda<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode)
 where
     T: Bus,
 {
-    registers.a = fetch::fetch_opecode(bus, registers, mode);
+    registers.a = fetch::fetch_operand(bus, registers, mode);
     registers.update_zero_and_negative_flags(registers.a);
 }
 
@@ -15,7 +15,7 @@ pub fn ldx<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode)
 where
     T: Bus,
 {
-    registers.x = fetch::fetch_opecode(bus, registers, mode);
+    registers.x = fetch::fetch_operand(bus, registers, mode);
     registers.update_zero_and_negative_flags(registers.x);
 }
 
@@ -23,7 +23,7 @@ pub fn ldy<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode)
 where
     T: Bus,
 {
-    registers.y = fetch::fetch_opecode(bus, registers, mode);
+    registers.y = fetch::fetch_operand(bus, registers, mode);
     registers.update_zero_and_negative_flags(registers.y);
 }
 
@@ -50,28 +50,11 @@ mod store_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                pc: 0x0005,
-                data: 0x01,
-                expect_a: 0x01,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                pc: 0x0005,
-                data: 0x00,
-                expect_a: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                pc: 0x0005,
-                data: 0x80,
-                expect_a: 0x80,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { pc: 0x0005, data: 0x01, expect_a: 0x01, expect_zero: false, expect_negative: false },
+            State { pc: 0x0005, data: 0x00, expect_a: 0x00, expect_zero: true,  expect_negative: false },
+            State { pc: 0x0005, data: 0x80, expect_a: 0x80, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {
@@ -102,28 +85,11 @@ mod store_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                pc: 0x0005,
-                data: 0x01,
-                expect_x: 0x01,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                pc: 0x0005,
-                data: 0x00,
-                expect_x: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                pc: 0x0005,
-                data: 0x80,
-                expect_x: 0x80,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { pc: 0x0005, data: 0x01, expect_x: 0x01, expect_zero: false, expect_negative: false },
+            State { pc: 0x0005, data: 0x00, expect_x: 0x00, expect_zero: true,  expect_negative: false },
+            State { pc: 0x0005, data: 0x80, expect_x: 0x80, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {
@@ -154,28 +120,11 @@ mod store_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                pc: 0x0005,
-                data: 0x01,
-                expect_y: 0x01,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                pc: 0x0005,
-                data: 0x00,
-                expect_y: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                pc: 0x0005,
-                data: 0x80,
-                expect_y: 0x80,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { pc: 0x0005, data: 0x01, expect_y: 0x01, expect_zero: false, expect_negative: false, },
+            State { pc: 0x0005, data: 0x00, expect_y: 0x00, expect_zero: true,  expect_negative: false, },
+            State { pc: 0x0005, data: 0x80, expect_y: 0x80, expect_zero: false, expect_negative: true, },
         ];
 
         for state in patterns {

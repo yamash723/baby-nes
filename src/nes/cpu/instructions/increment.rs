@@ -19,25 +19,11 @@ mod increment_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                x: 0x05,
-                expect_x: 0x06,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                x: 0xFF,
-                expect_x: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                x: 0xFE,
-                expect_x: 0xFF,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { x: 0x05, expect_x: 0x06, expect_zero: false, expect_negative: false },
+            State { x: 0xFF, expect_x: 0x00, expect_zero: true,  expect_negative: false },
+            State { x: 0xFE, expect_x: 0xFF, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {

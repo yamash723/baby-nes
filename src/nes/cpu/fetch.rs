@@ -40,7 +40,7 @@ where
     fetch_absolute(bus, registers) + registers.x as u16
 }
 
-pub fn fetch_opecode<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode) -> u8
+pub fn fetch_operand<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode) -> u8
 where
     T: Bus,
 {

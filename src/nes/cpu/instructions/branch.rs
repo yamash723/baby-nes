@@ -40,21 +40,12 @@ mod branch_tests {
             pub expect_pc: u16,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
             // BNE should be executed when zero flag is not set. (increment pc & add data)
-            State {
-                pc: 0x0005,
-                data: 0x50,
-                is_set_zero_flg: false,
-                expect_pc: 0x0005 + 1 + 0x0050,
-            },
+            State { pc: 0x0005, data: 0x50, is_set_zero_flg: false, expect_pc: 0x0005 + 1 + 0x0050 },
             // BNE should not be executed when zero flag is set. (increment pc only)
-            State {
-                pc: 0x0005,
-                data: 0x50,
-                is_set_zero_flg: true,
-                expect_pc: 0x0005 + 1,
-            },
+            State { pc: 0x0005, data: 0x50, is_set_zero_flg: true,  expect_pc: 0x0005 + 1 },
         ];
 
         for state in patterns {

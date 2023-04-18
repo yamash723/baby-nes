@@ -35,25 +35,11 @@ mod transfer_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                a: 0x05,
-                expect_x: 0x05,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                a: 0x00,
-                expect_x: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                a: 0xFF,
-                expect_x: 0xFF,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { a: 0x05, expect_x: 0x05, expect_zero: false, expect_negative: false },
+            State { a: 0x00, expect_x: 0x00, expect_zero: true,  expect_negative: false },
+            State { a: 0xFF, expect_x: 0xFF, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {
@@ -73,7 +59,6 @@ mod transfer_tests {
         }
     }
 
-
     #[test]
     fn tay_test() {
         struct State {
@@ -83,25 +68,11 @@ mod transfer_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                a: 0x05,
-                expect_y: 0x05,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                a: 0x00,
-                expect_y: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                a: 0xFF,
-                expect_y: 0xFF,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { a: 0x05, expect_y: 0x05, expect_zero: false, expect_negative: false },
+            State { a: 0x00, expect_y: 0x00, expect_zero: true,  expect_negative: false },
+            State { a: 0xFF, expect_y: 0xFF, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {
@@ -121,7 +92,6 @@ mod transfer_tests {
         }
     }
 
-
     #[test]
     fn txa_test() {
         struct State {
@@ -131,25 +101,11 @@ mod transfer_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                x: 0x05,
-                expect_a: 0x05,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                x: 0x00,
-                expect_a: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                x: 0xFF,
-                expect_a: 0xFF,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { x: 0x05, expect_a: 0x05, expect_zero: false, expect_negative: false },
+            State { x: 0x00, expect_a: 0x00, expect_zero: true,  expect_negative: false },
+            State { x: 0xFF, expect_a: 0xFF, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {
@@ -178,25 +134,11 @@ mod transfer_tests {
             pub expect_negative: bool,
         }
 
+        #[rustfmt::skip]
         let patterns = vec![
-            State {
-                y: 0x05,
-                expect_a: 0x05,
-                expect_zero: false,
-                expect_negative: false,
-            },
-            State {
-                y: 0x00,
-                expect_a: 0x00,
-                expect_zero: true,
-                expect_negative: false,
-            },
-            State {
-                y: 0xFF,
-                expect_a: 0xFF,
-                expect_zero: false,
-                expect_negative: true,
-            },
+            State { y: 0x05, expect_a: 0x05, expect_zero: false, expect_negative: false },
+            State { y: 0x00, expect_a: 0x00, expect_zero: true,  expect_negative: false },
+            State { y: 0xFF, expect_a: 0xFF, expect_zero: false, expect_negative: true },
         ];
 
         for state in patterns {
