@@ -54,6 +54,8 @@ pub enum Code {
     INX,
     INY,
     // Decrement
+    DEC,
+    DEX,
     DEY,
     // Jump
     JMP,

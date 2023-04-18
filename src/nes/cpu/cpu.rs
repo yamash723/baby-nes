@@ -68,9 +68,9 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::INX => instructions::increment::inx(cpu.registers),
             Code::INY => instructions::increment::iny(cpu.registers),
             // -- Decrement --
+            Code::DEC => instructions::decrement::dec(cpu.bus, cpu.registers, &opecode.mode),
+            Code::DEX => instructions::decrement::dex(cpu.registers),
             Code::DEY => instructions::decrement::dey(cpu.registers),
-            // Code::DEX
-            // Code::DEC
             // -- Shift --
             // Code::ASL
             // Code::LSR

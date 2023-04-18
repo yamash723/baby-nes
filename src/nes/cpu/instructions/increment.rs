@@ -1,4 +1,7 @@
-use crate::nes::{cpu::{registers::CpuRegisters, opecode::AddressingMode, fetch}, bus::Bus};
+use crate::nes::{
+    bus::Bus,
+    cpu::{fetch, opecode::AddressingMode, registers::CpuRegisters},
+};
 
 pub fn inx(registers: &mut CpuRegisters) {
     registers.x = registers.x.wrapping_add(1);
@@ -23,7 +26,7 @@ where
 #[cfg(test)]
 mod increment_tests {
     use super::*;
-    use crate::nes::cpu::{registers::CpuStatusFlag, instructions::instructions_test::MockBus};
+    use crate::nes::cpu::{instructions::instructions_test::MockBus, registers::CpuStatusFlag};
 
     #[test]
     fn inx_test() {
@@ -119,7 +122,7 @@ mod increment_tests {
 
             inc(&mut bus, &mut registers, &AddressingMode::Immediate);
 
-            assert_eq!(bus.read(0x0010), state.expect_data);
+            assert_eq!(bus.read(state.address as u16), state.expect_data);
             assert_eq!(registers.p.contains(CpuStatusFlag::ZERO), state.expect_zero);
             assert_eq!(
                 registers.p.contains(CpuStatusFlag::NEGATIVE),
