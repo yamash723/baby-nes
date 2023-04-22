@@ -53,6 +53,11 @@ pub enum Code {
     ORA,
     BIT,
     // Arithmetic
+    // ADC,
+    // SBC,
+    // CMP,
+    // CPX,
+    // CPY,
     // Increment
     INC,
     INX,
@@ -61,6 +66,11 @@ pub enum Code {
     DEC,
     DEX,
     DEY,
+    // Shift
+    ASL,
+    LSR,
+    ROL,
+    ROR,
     // Jump
     JMP,
     JSR,

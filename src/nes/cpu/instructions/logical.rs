@@ -1,6 +1,10 @@
 use crate::nes::{
     bus::Bus,
-    cpu::{fetch, opecode::AddressingMode, registers::{CpuRegisters, CpuStatusFlag}},
+    cpu::{
+        fetch,
+        opecode::AddressingMode,
+        registers::{CpuRegisters, CpuStatusFlag},
+    },
 };
 
 pub fn and<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode)
@@ -35,9 +39,15 @@ where
     T: Bus,
 {
     let operand = fetch::fetch_operand(bus, registers, mode);
-    registers.p.set(CpuStatusFlag::ZERO, registers.a & operand == 0);
-    registers.p.set(CpuStatusFlag::OVERFLOW, operand & 0b01000000 != 0);
-    registers.p.set(CpuStatusFlag::NEGATIVE, operand & 0b10000000 != 0);
+    registers
+        .p
+        .set(CpuStatusFlag::ZERO, registers.a & operand == 0);
+    registers
+        .p
+        .set(CpuStatusFlag::OVERFLOW, operand & 0b01000000 != 0);
+    registers
+        .p
+        .set(CpuStatusFlag::NEGATIVE, operand & 0b10000000 != 0);
 }
 
 #[cfg(test)]
@@ -185,7 +195,10 @@ mod logical_tests {
             bit(&mut bus, &mut registers, &AddressingMode::Immediate);
 
             assert_eq!(registers.p.contains(CpuStatusFlag::ZERO), state.expect_zero);
-            assert_eq!(registers.p.contains(CpuStatusFlag::OVERFLOW), state.expect_overflow);
+            assert_eq!(
+                registers.p.contains(CpuStatusFlag::OVERFLOW),
+                state.expect_overflow
+            );
             assert_eq!(
                 registers.p.contains(CpuStatusFlag::NEGATIVE),
                 state.expect_negative

@@ -62,7 +62,7 @@ where
     fn read_u16(&self, address: u16) -> u16 {
         let lower = self.read(address);
         let upper = self.read(address + 1);
-        u16::from_be_bytes([upper,  lower])
+        u16::from_be_bytes([upper, lower])
     }
 
     fn write(&mut self, address: u16, data: u8) {

@@ -30,7 +30,7 @@ where
 {
     let lower = fetch(bus, registers);
     let upper = fetch(bus, registers);
-    u16::from_be_bytes([upper,  lower])
+    u16::from_be_bytes([upper, lower])
 }
 
 pub fn fetch_absolute_x<T>(bus: &mut T, registers: &mut CpuRegisters) -> u16

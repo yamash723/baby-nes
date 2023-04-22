@@ -30,7 +30,7 @@ where
 
 #[cfg(test)]
 mod system_tests {
-    use crate::nes::cpu::{instructions::instructions_test::MockBus};
+    use crate::nes::cpu::instructions::instructions_test::MockBus;
 
     use super::*;
 

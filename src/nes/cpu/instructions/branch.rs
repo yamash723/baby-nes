@@ -7,7 +7,6 @@ use crate::nes::{
     },
 };
 
-
 pub fn bcc<T>(bus: &mut T, registers: &mut CpuRegisters, mode: &AddressingMode)
 where
     T: Bus,
@@ -132,7 +131,9 @@ mod branch_tests {
 
             bus.write(state.pc, state.data);
             registers.pc = state.pc;
-            registers.p.set(CpuStatusFlag::CARRY, state.is_set_carry_flg);
+            registers
+                .p
+                .set(CpuStatusFlag::CARRY, state.is_set_carry_flg);
 
             bcc(&mut bus, &mut registers, &AddressingMode::Relative);
 
@@ -163,7 +164,9 @@ mod branch_tests {
 
             bus.write(state.pc, state.data);
             registers.pc = state.pc;
-            registers.p.set(CpuStatusFlag::CARRY, state.is_set_carry_flg);
+            registers
+                .p
+                .set(CpuStatusFlag::CARRY, state.is_set_carry_flg);
 
             bcs(&mut bus, &mut registers, &AddressingMode::Relative);
 
@@ -225,7 +228,9 @@ mod branch_tests {
 
             bus.write(state.pc, state.data);
             registers.pc = state.pc;
-            registers.p.set(CpuStatusFlag::NEGATIVE, state.is_set_negative_flg);
+            registers
+                .p
+                .set(CpuStatusFlag::NEGATIVE, state.is_set_negative_flg);
 
             bmi(&mut bus, &mut registers, &AddressingMode::Relative);
 
@@ -287,7 +292,9 @@ mod branch_tests {
 
             bus.write(state.pc, state.data);
             registers.pc = state.pc;
-            registers.p.set(CpuStatusFlag::NEGATIVE, state.is_set_negative_flg);
+            registers
+                .p
+                .set(CpuStatusFlag::NEGATIVE, state.is_set_negative_flg);
 
             bpl(&mut bus, &mut registers, &AddressingMode::Relative);
 
@@ -318,7 +325,9 @@ mod branch_tests {
 
             bus.write(state.pc, state.data);
             registers.pc = state.pc;
-            registers.p.set(CpuStatusFlag::OVERFLOW, state.is_set_overflow_flg);
+            registers
+                .p
+                .set(CpuStatusFlag::OVERFLOW, state.is_set_overflow_flg);
 
             bvc(&mut bus, &mut registers, &AddressingMode::Relative);
 
@@ -349,7 +358,9 @@ mod branch_tests {
 
             bus.write(state.pc, state.data);
             registers.pc = state.pc;
-            registers.p.set(CpuStatusFlag::OVERFLOW, state.is_set_overflow_flg);
+            registers
+                .p
+                .set(CpuStatusFlag::OVERFLOW, state.is_set_overflow_flg);
 
             bvs(&mut bus, &mut registers, &AddressingMode::Relative);
 

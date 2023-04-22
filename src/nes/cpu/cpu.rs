@@ -72,10 +72,10 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::DEX => instructions::decrement::dex(cpu.registers),
             Code::DEY => instructions::decrement::dey(cpu.registers),
             // -- Shift --
-            // Code::ASL
-            // Code::LSR
-            // Code::ROL
-            // Code::ROR
+            Code::ASL => instructions::shift::asl(cpu.registers),
+            Code::LSR => instructions::shift::lsr(cpu.registers),
+            Code::ROL => instructions::shift::rol(cpu.registers),
+            Code::ROR => instructions::shift::ror(cpu.registers),
             // -- Jump --
             Code::JMP => instructions::jump::jmp(cpu.bus, cpu.registers, &opecode.mode),
             Code::JSR => instructions::jump::jsr(cpu.bus, cpu.registers, &opecode.mode),
@@ -99,7 +99,7 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::SEI => instructions::flags::sei(cpu.registers),
             // -- System --
             Code::BRK => instructions::system::brk(cpu.bus, cpu.registers),
-            Code::NOP => { /* NOP do nothing */ },
+            Code::NOP => { /* NOP do nothing */ }
             Code::RTI => instructions::system::rti(cpu.bus, cpu.registers),
         };
 
