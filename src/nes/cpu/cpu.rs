@@ -53,10 +53,10 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::PLA => instructions::stack::pla(cpu.bus, cpu.registers),
             Code::PLP => instructions::stack::plp(cpu.bus, cpu.registers),
             // -- Logical --
-            // Code::AND
-            // Code::EOR
-            // Code::ORA
-            // Code::BIT
+            Code::AND => instructions::logical::and(cpu.bus, cpu.registers, &opecode.mode),
+            Code::EOR => instructions::logical::eor(cpu.bus, cpu.registers, &opecode.mode),
+            Code::ORA => instructions::logical::ora(cpu.bus, cpu.registers, &opecode.mode),
+            Code::BIT => instructions::logical::bit(cpu.bus, cpu.registers, &opecode.mode),
             // -- Arithmetic --
             // Code::ADC
             // Code::SBC

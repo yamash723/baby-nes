@@ -7,6 +7,7 @@ pub(super) mod load;
 pub(super) mod stack;
 pub(super) mod store;
 pub(super) mod transfer;
+pub(super) mod logical;
 pub(super) mod system;
 
 #[cfg(test)]

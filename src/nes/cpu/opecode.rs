@@ -48,6 +48,10 @@ pub enum Code {
     PLA,
     PLP,
     // Logical
+    AND,
+    EOR,
+    ORA,
+    BIT,
     // Arithmetic
     // Increment
     INC,
