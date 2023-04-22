@@ -1,3 +1,4 @@
+pub(super) mod arithmetic;
 pub(super) mod branch;
 pub(super) mod decrement;
 pub(super) mod flags;

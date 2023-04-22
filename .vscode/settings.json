@@ -5,5 +5,6 @@
         "Playchoice",
         "rstest",
         "vsync"
-    ]
+    ],
+    "prettier.tabWidth": 4
 }

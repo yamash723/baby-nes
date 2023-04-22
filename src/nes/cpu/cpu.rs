@@ -58,11 +58,11 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::ORA => instructions::logical::ora(cpu.bus, cpu.registers, &opecode.mode),
             Code::BIT => instructions::logical::bit(cpu.bus, cpu.registers, &opecode.mode),
             // -- Arithmetic --
-            // Code::ADC
-            // Code::SBC
-            // Code::CMP
-            // Code::CPX
-            // Code::CPY
+            Code::ADC => instructions::arithmetic::adc(cpu.bus, cpu.registers, &opecode.mode),
+            Code::SBC => instructions::arithmetic::sbc(cpu.bus, cpu.registers, &opecode.mode),
+            Code::CMP => instructions::arithmetic::cmp(cpu.bus, cpu.registers, &opecode.mode),
+            Code::CPX => instructions::arithmetic::cpx(cpu.bus, cpu.registers, &opecode.mode),
+            Code::CPY => instructions::arithmetic::cpy(cpu.bus, cpu.registers, &opecode.mode),
             // -- Increment --
             Code::INC => instructions::increment::inc(cpu.bus, cpu.registers, &opecode.mode),
             Code::INX => instructions::increment::inx(cpu.registers),

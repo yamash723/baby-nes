@@ -53,11 +53,11 @@ pub enum Code {
     ORA,
     BIT,
     // Arithmetic
-    // ADC,
-    // SBC,
-    // CMP,
-    // CPX,
-    // CPY,
+    ADC,
+    SBC,
+    CMP,
+    CPX,
+    CPY,
     // Increment
     INC,
     INX,
