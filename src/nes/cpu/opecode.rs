@@ -59,6 +59,8 @@ pub enum Code {
     DEY,
     // Jump
     JMP,
+    JSR,
+    RTS,
     // Branches
     BNE,
     // Flags

@@ -78,8 +78,8 @@ impl<'a, T: Bus> Cpu<'a, T> {
             // Code::ROR
             // -- Jump --
             Code::JMP => instructions::jump::jmp(cpu.bus, cpu.registers, &opecode.mode),
-            // Code::JSR
-            // Code::RTS
+            Code::JSR => instructions::jump::jsr(cpu.bus, cpu.registers, &opecode.mode),
+            Code::RTS => instructions::jump::rts(cpu.bus, cpu.registers),
             // -- Branches --
             Code::BNE => instructions::branch::bne(cpu.bus, cpu.registers, &opecode.mode),
             // Code::BCC

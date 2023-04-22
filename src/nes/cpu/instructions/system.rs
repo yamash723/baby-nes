@@ -7,10 +7,7 @@ pub fn brk<T>(bus: &mut T, registers: &mut CpuRegisters)
 where
     T: Bus,
 {
-    let upper = ((registers.pc & 0xFF00) >> 8) as u8;
-    let lower = (registers.pc & 0x00FF) as u8;
-    registers.push(bus, upper);
-    registers.push(bus, lower);
+    registers.push_u16(bus, registers.pc);
     registers.push(bus, registers.p.bits());
 
     registers.pc = bus.read_u16(0xFFFE);

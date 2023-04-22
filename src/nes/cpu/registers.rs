@@ -60,12 +60,31 @@ impl CpuRegisters {
         self.s = self.s.wrapping_sub(1);
     }
 
+    pub fn push_u16<T>(&mut self, bus: &mut T, data: u16)
+    where
+        T: Bus,
+    {
+        let upper = ((data & 0xFF00) >> 8) as u8;
+        let lower = (data & 0x00FF) as u8;
+        self.push(bus, upper);
+        self.push(bus, lower);
+    }
+
     pub fn pull<T>(&mut self, bus: &mut T) -> u8
     where
         T: Bus,
     {
         self.s = self.s.wrapping_add(1);
         bus.read(0x0100 | self.s as u16)
+    }
+
+    pub fn pull_u16<T>(&mut self, bus: &mut T) -> u16
+    where
+        T: Bus,
+    {
+        let lower = self.pull(bus);
+        let upper = self.pull(bus);
+        u16::from_be_bytes([upper, lower])
     }
 }
 
@@ -140,7 +159,20 @@ mod registers_tests {
         registers.push(&mut bus, 0x20);
 
         assert_eq!(registers.s, 0x08);
-        assert_eq!(bus.read(0x0109), 0x20)
+        assert_eq!(bus.read(0x0109), 0x20);
+    }
+
+    #[test]
+    fn push_u16_test() {
+        let mut bus = MockBus::new();
+        let mut registers = CpuRegisters::new();
+
+        registers.s = 0x09;
+        registers.push_u16(&mut bus, 0x2030);
+
+        assert_eq!(registers.s, 0x07);
+        assert_eq!(bus.read(0x0108), 0x30); // lower
+        assert_eq!(bus.read(0x0109), 0x20); // upper
     }
 
     #[test]
@@ -155,5 +187,20 @@ mod registers_tests {
 
         assert_eq!(registers.s, 0x0A);
         assert_eq!(data, 0x20);
+    }
+
+    #[test]
+    fn pull_u16_test() {
+        let mut bus = MockBus::new();
+        let mut registers = CpuRegisters::new();
+
+        registers.s = 0x07;
+        bus.write(0x0108, 0x30); // lower
+        bus.write(0x0109, 0x20); // upper
+
+        let data = registers.pull_u16(&mut bus);
+
+        assert_eq!(registers.s, 0x09);
+        assert_eq!(data, 0x2030);
     }
 }
