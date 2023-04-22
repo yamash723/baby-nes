@@ -90,12 +90,12 @@ impl<'a, T: Bus> Cpu<'a, T> {
             // Code::BVC
             // Code::BVS
             // -- Flags --
-            // Code::CLC
-            // Code::CLD
-            // Code::CLI
-            // Code::CLV
-            // Code::SEC
-            // Code::SED
+            Code::CLC => instructions::flags::clc(cpu.registers),
+            Code::CLD => instructions::flags::cld(cpu.registers),
+            Code::CLI => instructions::flags::cli(cpu.registers),
+            Code::CLV => instructions::flags::clv(cpu.registers),
+            Code::SEC => instructions::flags::sec(cpu.registers),
+            Code::SED => instructions::flags::sed(cpu.registers),
             Code::SEI => instructions::flags::sei(cpu.registers),
             // -- System --
             // Code::BRK

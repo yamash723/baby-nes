@@ -3,16 +3,16 @@ use bitflags::bitflags;
 const DEFAULT_STACK_POINT: u8 = 0xFD;
 
 bitflags! {
-  pub struct CpuStatusFlag: u8 {
-    const CARRY             = 0b00000001;
-    const ZERO              = 0b00000010;
-    const INTERRUPT_DISABLE = 0b00000100;
-    const DECIMAL           = 0b00001000;
-    const BREAK             = 0b00010000;
-    const BREAK2            = 0b00100000;
-    const OVERFLOW          = 0b01000000;
-    const NEGATIVE          = 0b10000000;
-  }
+    pub struct CpuStatusFlag: u8 {
+        const CARRY             = 0b00000001;
+        const ZERO              = 0b00000010;
+        const INTERRUPT_DISABLE = 0b00000100;
+        const DECIMAL           = 0b00001000;
+        const BREAK             = 0b00010000;
+        const BREAK2            = 0b00100000;
+        const OVERFLOW          = 0b01000000;
+        const NEGATIVE          = 0b10000000;
+    }
 }
 
 pub struct CpuRegisters {

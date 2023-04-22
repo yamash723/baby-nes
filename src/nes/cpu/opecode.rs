@@ -62,6 +62,12 @@ pub enum Code {
     // Branches
     BNE,
     // Flags
+    CLC,
+    CLD,
+    CLI,
+    CLV,
+    SEC,
+    SED,
     SEI,
     // System
 }
