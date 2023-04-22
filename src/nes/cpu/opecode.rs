@@ -66,7 +66,14 @@ pub enum Code {
     JSR,
     RTS,
     // Branches
+    BCC,
+    BCS,
+    BEQ,
+    BMI,
     BNE,
+    BPL,
+    BVC,
+    BVS,
     // Flags
     CLC,
     CLD,

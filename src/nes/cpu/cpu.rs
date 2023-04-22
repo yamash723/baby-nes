@@ -81,14 +81,14 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::JSR => instructions::jump::jsr(cpu.bus, cpu.registers, &opecode.mode),
             Code::RTS => instructions::jump::rts(cpu.bus, cpu.registers),
             // -- Branches --
+            Code::BCC => instructions::branch::bcc(cpu.bus, cpu.registers, &opecode.mode),
+            Code::BCS => instructions::branch::bcs(cpu.bus, cpu.registers, &opecode.mode),
+            Code::BEQ => instructions::branch::beq(cpu.bus, cpu.registers, &opecode.mode),
+            Code::BMI => instructions::branch::bmi(cpu.bus, cpu.registers, &opecode.mode),
             Code::BNE => instructions::branch::bne(cpu.bus, cpu.registers, &opecode.mode),
-            // Code::BCC
-            // Code::BCS
-            // Code::BEQ
-            // Code::BMI
-            // Code::BPL
-            // Code::BVC
-            // Code::BVS
+            Code::BPL => instructions::branch::bpl(cpu.bus, cpu.registers, &opecode.mode),
+            Code::BVC => instructions::branch::bvc(cpu.bus, cpu.registers, &opecode.mode),
+            Code::BVS => instructions::branch::bvs(cpu.bus, cpu.registers, &opecode.mode),
             // -- Flags --
             Code::CLC => instructions::flags::clc(cpu.registers),
             Code::CLD => instructions::flags::cld(cpu.registers),
