@@ -28,9 +28,9 @@ pub fn fetch_absolute<T>(bus: &mut T, registers: &mut CpuRegisters) -> u16
 where
     T: Bus,
 {
-    let lower = fetch(bus, registers) as u16;
-    let upper = fetch(bus, registers) as u16;
-    lower | upper << 8
+    let lower = fetch(bus, registers);
+    let upper = fetch(bus, registers);
+    u16::from_be_bytes([upper,  lower])
 }
 
 pub fn fetch_absolute_x<T>(bus: &mut T, registers: &mut CpuRegisters) -> u16

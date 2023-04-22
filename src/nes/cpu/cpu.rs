@@ -98,9 +98,9 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::SED => instructions::flags::sed(cpu.registers),
             Code::SEI => instructions::flags::sei(cpu.registers),
             // -- System --
-            // Code::BRK
-            // Code::NOP
-            // Code::RTI
+            Code::BRK => instructions::system::brk(cpu.bus, cpu.registers),
+            Code::NOP => { /* NOP do nothing */ },
+            Code::RTI => instructions::system::rti(cpu.bus, cpu.registers),
         };
 
         opecode.cycle
@@ -123,6 +123,10 @@ mod cpu_tests {
     impl Bus for MockBus {
         fn read(&self, address: u16) -> u8 {
             self.data[address as usize]
+        }
+
+        fn read_u16(&self, _address: u16) -> u16 {
+            unimplemented!()
         }
 
         fn write(&mut self, address: u16, data: u8) {

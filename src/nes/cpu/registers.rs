@@ -1,5 +1,7 @@
 use bitflags::bitflags;
 
+use crate::nes::bus::Bus;
+
 const DEFAULT_STACK_POINT: u8 = 0xFD;
 
 bitflags! {
@@ -49,11 +51,53 @@ impl CpuRegisters {
             self.p.remove(CpuStatusFlag::NEGATIVE);
         }
     }
+
+    pub fn push<T>(&mut self, bus: &mut T, data: u8)
+    where
+        T: Bus,
+    {
+        bus.write(0x0100 | self.s as u16, data);
+        self.s = self.s.wrapping_sub(1);
+    }
+
+    pub fn pull<T>(&mut self, bus: &mut T) -> u8
+    where
+        T: Bus,
+    {
+        self.s = self.s.wrapping_add(1);
+        bus.read(0x0100 | self.s as u16)
+    }
 }
 
 #[cfg(test)]
 mod registers_tests {
     use super::*;
+
+    pub struct MockBus {
+        data: Vec<u8>,
+    }
+
+    impl MockBus {
+        pub fn new() -> Self {
+            Self {
+                data: vec![0; 0xFFFF],
+            }
+        }
+    }
+
+    impl Bus for MockBus {
+        fn read(&self, address: u16) -> u8 {
+            self.data[address as usize]
+        }
+
+        fn read_u16(&self, _address: u16) -> u16 {
+            unimplemented!()
+        }
+
+        fn write(&mut self, address: u16, data: u8) {
+            self.data[address as usize] = data;
+        }
+    }
 
     #[test]
     fn update_zero_and_negative_flags_test() {
@@ -85,5 +129,31 @@ mod registers_tests {
                 state.expect_negative
             );
         }
+    }
+
+    #[test]
+    fn push_test() {
+        let mut bus = MockBus::new();
+        let mut registers = CpuRegisters::new();
+
+        registers.s = 0x09;
+        registers.push(&mut bus, 0x20);
+
+        assert_eq!(registers.s, 0x08);
+        assert_eq!(bus.read(0x0109), 0x20)
+    }
+
+    #[test]
+    fn pull_test() {
+        let mut bus = MockBus::new();
+        let mut registers = CpuRegisters::new();
+
+        registers.s = 0x09;
+        bus.write(0x010A, 0x20);
+
+        let data = registers.pull(&mut bus);
+
+        assert_eq!(registers.s, 0x0A);
+        assert_eq!(data, 0x20);
     }
 }

@@ -59,6 +59,12 @@ where
         }
     }
 
+    fn read_u16(&self, address: u16) -> u16 {
+        let lower = self.read(address);
+        let upper = self.read(address + 1);
+        u16::from_be_bytes([upper,  lower])
+    }
+
     fn write(&mut self, address: u16, data: u8) {
         println!("CpuBus write Address {:x} / Data: {:x}", &address, &data);
         match address {
@@ -203,6 +209,24 @@ mod cpu_bus_test {
             // Mirror
             assert_eq!(bus.read(0xC000), 0x01);
             assert_eq!(bus.read(0xFFFF), 0x02);
+        }
+    }
+
+    mod read_u16_test {
+        use crate::nes::{bus::Bus, cpu::bus::CpuBus, ram::Ram};
+
+        #[test]
+        fn read_u16_test() {
+            let program_rom = Vec::new();
+            let mut ppu = super::MockPpu::new();
+
+            let mut wram = Ram::new(0x0800);
+            wram.write(0x0000, 0x01); // lower
+            wram.write(0x0001, 0x02); // upper
+
+            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
+
+            assert_eq!(bus.read_u16(0x0000), 0x0201);
         }
     }
 

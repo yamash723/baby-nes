@@ -7,6 +7,7 @@ pub(super) mod load;
 pub(super) mod stack;
 pub(super) mod store;
 pub(super) mod transfer;
+pub(super) mod system;
 
 #[cfg(test)]
 mod instructions_test {
@@ -19,7 +20,7 @@ mod instructions_test {
     impl MockBus {
         pub fn new() -> Self {
             Self {
-                data: vec![0; 0xFFFF],
+                data: vec![0; 0x10000],
             }
         }
     }
@@ -27,6 +28,12 @@ mod instructions_test {
     impl Bus for MockBus {
         fn read(&self, address: u16) -> u8 {
             self.data[address as usize]
+        }
+
+        fn read_u16(&self, address: u16) -> u16 {
+            let lower = self.data[address as usize];
+            let upper = self.data[(address + 1) as usize];
+            u16::from_be_bytes([upper,  lower])
         }
 
         fn write(&mut self, address: u16, data: u8) {

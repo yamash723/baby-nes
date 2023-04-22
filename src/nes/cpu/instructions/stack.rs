@@ -16,24 +16,21 @@ pub fn pha<T>(bus: &mut T, registers: &mut CpuRegisters)
 where
     T: Bus,
 {
-    bus.write(0x0100 | registers.s as u16, registers.a);
-    registers.s = registers.s.wrapping_sub(1);
+    registers.push(bus, registers.a);
 }
 
 pub fn php<T>(bus: &mut T, registers: &mut CpuRegisters)
 where
     T: Bus,
 {
-    bus.write(0x0100 | registers.s as u16, registers.p.bits());
-    registers.s = registers.s.wrapping_sub(1);
+    registers.push(bus, registers.p.bits());
 }
 
 pub fn pla<T>(bus: &mut T, registers: &mut CpuRegisters)
 where
     T: Bus,
 {
-    registers.a = bus.read(0x0100 | registers.s as u16);
-    registers.s = registers.s.wrapping_add(1);
+    registers.a = registers.pull(bus);
     registers.update_zero_and_negative_flags(registers.a);
 }
 
@@ -41,9 +38,8 @@ pub fn plp<T>(bus: &mut T, registers: &mut CpuRegisters)
 where
     T: Bus,
 {
-    let data = bus.read(0x0100 | registers.s as u16);
+    let data = registers.pull(bus);
     registers.p = CpuStatusFlag::from_bits_truncate(data);
-    registers.s = registers.s.wrapping_add(1);
 }
 
 #[cfg(test)]
@@ -147,7 +143,7 @@ mod stack_tests {
             registers.s = state.s;
             registers.p.remove(CpuStatusFlag::ZERO);
             registers.p.remove(CpuStatusFlag::NEGATIVE);
-            bus.write(0x0100 | state.s as u16, state.stack_data);
+            bus.write(0x0100 | (state.s + 1) as u16, state.stack_data);
 
             pla(&mut bus, &mut registers);
 
@@ -166,12 +162,12 @@ mod stack_tests {
         let mut bus = MockBus::new();
         let mut registers = CpuRegisters::new();
 
-        registers.s = 0x09;
+        registers.s = 0x08;
         bus.write(0x0109, 0x20);
 
         plp(&mut bus, &mut registers);
 
-        assert_eq!(registers.s, 0x0A);
+        assert_eq!(registers.s, 0x09);
         assert_eq!(registers.p.bits(), 0x20);
     }
 }

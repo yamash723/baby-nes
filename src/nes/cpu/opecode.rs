@@ -70,6 +70,9 @@ pub enum Code {
     SED,
     SEI,
     // System
+    BRK,
+    NOP,
+    RTI,
 }
 
 #[rustfmt::skip]
