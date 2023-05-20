@@ -101,6 +101,7 @@ impl<'a, T: Bus> Cpu<'a, T> {
             Code::BRK => instructions::system::brk(cpu.bus, cpu.registers),
             Code::NOP => { /* NOP do nothing */ }
             Code::RTI => instructions::system::rti(cpu.bus, cpu.registers),
+            _ => println!("Unimplemented instruction: {:?}", opecode.code),
         };
 
         opecode.cycle

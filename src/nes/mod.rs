@@ -21,8 +21,8 @@ pub mod cpu;
 pub mod ppu;
 pub mod ram;
 
-const WRAM_SIZE: u16 = 2024;
-const VRAM_SIZE: u16 = 2024;
+const WRAM_SIZE: u16 = 2028;
+const VRAM_SIZE: u16 = 2028;
 
 pub struct Nes {
     cartridge: Cartridge,

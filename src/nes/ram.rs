@@ -41,7 +41,7 @@ impl<'a> Ram {
         match self.data.get_mut(address as usize) {
             Some(data) => *data = value,
             None => panic!(
-                "Out-of-range access to RAM. RAM size {:X} / address: {:X}",
+                "Out-of-range access to RAM. RAM size {:x} / address: {:x}",
                 self.data.len(),
                 address
             ),
