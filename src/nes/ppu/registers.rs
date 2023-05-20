@@ -4,13 +4,14 @@ pub mod ppu_data;
 pub mod ppu_mask;
 pub mod ppu_scroll;
 pub mod ppu_status;
+pub mod oam;
 
 use self::{
     ppu_address::PpuAddress,
     ppu_control::{BaseNameTableAddress, PpuCtrl},
     ppu_data::PpuData,
     ppu_mask::PpuMask,
-    ppu_scroll::PpuScroll, ppu_status::PpuStatus,
+    ppu_scroll::PpuScroll, ppu_status::PpuStatus, oam::Oam,
 };
 
 pub trait PpuRegistration {
@@ -25,7 +26,7 @@ pub struct PpuRegisters {
     pub ppu_data: PpuData,
     pub ppu_scroll: PpuScroll,
     pub ppu_status: PpuStatus,
-    // pub oam: Oam,
+    pub oam: Oam,
 }
 
 impl PpuRegisters {
@@ -37,7 +38,7 @@ impl PpuRegisters {
             ppu_data: PpuData::new(),
             ppu_scroll: PpuScroll::new(),
             ppu_status: PpuStatus::empty(),
-            // oam: Oam::new(),
+            oam: Oam::new(),
         }
     }
 

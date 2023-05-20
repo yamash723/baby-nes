@@ -24,9 +24,11 @@ pub struct Ppu {
     pub vram: Ram,
     pub palette_ram: PaletteRam,
     pub ppu_registers: PpuRegisters,
+    pub sprite_ram: Ram,
 }
 
 const CLOCK_TO_RENDER_LINE: u16 = 341;
+const SPRITE_RAM_SIZE: u16 = 1024 * 4; // 4KB
 
 pub enum PpuRunResult {
     CountUpCycle,
@@ -44,6 +46,7 @@ impl Ppu {
             vram,
             palette_ram: PaletteRam::new(),
             ppu_registers: PpuRegisters::new(),
+            sprite_ram: Ram::new(SPRITE_RAM_SIZE),
         }
     }
 
@@ -149,7 +152,7 @@ impl PpuRegistration for Ppu {
         println!("PPU registers read | Address: {:x}", address);
         match address {
             0x0002 => self.read_status(),
-            // 0x0004 => {}
+            0x0004 => *self.ppu_registers.oam.read(&self.sprite_ram),
             // 0x0007 => {}
             _ => panic!("unimplemented read address: {}", address),
         }
@@ -163,6 +166,7 @@ impl PpuRegistration for Ppu {
         match address {
             0x0000 => self.ppu_registers.ppu_ctrl = PpuCtrl::from_bits(data).unwrap(),
             0x0001 => self.ppu_registers.ppu_mask = PpuMask::from_bits(data).unwrap(),
+            0x0003 => self.ppu_registers.oam.write(data),
             0x0005 => self.ppu_registers.ppu_scroll.write(data),
             0x0006 => self.ppu_registers.ppu_addr.write(data as u16),
             0x0007 => {
