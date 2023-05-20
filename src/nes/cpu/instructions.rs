@@ -29,11 +29,11 @@ mod instructions_test {
     }
 
     impl Bus for MockBus {
-        fn read(&self, address: u16) -> u8 {
+        fn read(&mut self, address: u16) -> u8 {
             self.data[address as usize]
         }
 
-        fn read_u16(&self, address: u16) -> u16 {
+        fn read_u16(&mut self, address: u16) -> u16 {
             let lower = self.data[address as usize];
             let upper = self.data[(address + 1) as usize];
             u16::from_be_bytes([upper, lower])

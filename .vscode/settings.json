@@ -4,6 +4,7 @@
         "nametable",
         "Playchoice",
         "rstest",
+        "vblank",
         "vsync"
     ],
     "prettier.tabWidth": 4

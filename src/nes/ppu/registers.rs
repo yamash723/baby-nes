@@ -3,17 +3,18 @@ pub mod ppu_control;
 pub mod ppu_data;
 pub mod ppu_mask;
 pub mod ppu_scroll;
+pub mod ppu_status;
 
 use self::{
     ppu_address::PpuAddress,
     ppu_control::{BaseNameTableAddress, PpuCtrl},
     ppu_data::PpuData,
     ppu_mask::PpuMask,
-    ppu_scroll::PpuScroll,
+    ppu_scroll::PpuScroll, ppu_status::PpuStatus,
 };
 
 pub trait PpuRegistration {
-    fn read(&self, address: u16) -> u8;
+    fn read(&mut self, address: u16) -> u8;
     fn write(&mut self, address: u16, data: u8);
 }
 
@@ -23,7 +24,7 @@ pub struct PpuRegisters {
     pub ppu_addr: PpuAddress,
     pub ppu_data: PpuData,
     pub ppu_scroll: PpuScroll,
-    // pub ppu_status: PpuStatus,
+    pub ppu_status: PpuStatus,
     // pub oam: Oam,
 }
 
@@ -35,7 +36,7 @@ impl PpuRegisters {
             ppu_addr: PpuAddress::new(),
             ppu_data: PpuData::new(),
             ppu_scroll: PpuScroll::new(),
-            // ppu_status: PpuStatus::new(),
+            ppu_status: PpuStatus::empty(),
             // oam: Oam::new(),
         }
     }

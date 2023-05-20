@@ -105,11 +105,11 @@ mod registers_tests {
     }
 
     impl Bus for MockBus {
-        fn read(&self, address: u16) -> u8 {
+        fn read(&mut self, address: u16) -> u8 {
             self.data[address as usize]
         }
 
-        fn read_u16(&self, _address: u16) -> u16 {
+        fn read_u16(&mut self, _address: u16) -> u16 {
             unimplemented!()
         }
 

@@ -23,7 +23,7 @@ impl<'a, T> Bus for CpuBus<'a, T>
 where
     T: PpuRegistration,
 {
-    fn read(&self, address: u16) -> u8 {
+    fn read(&mut self, address: u16) -> u8 {
         match address {
             0x0000..=0x1FFF => {
                 // 0x0000..=0x07FF => access to RAM.
@@ -59,7 +59,7 @@ where
         }
     }
 
-    fn read_u16(&self, address: u16) -> u16 {
+    fn read_u16(&mut self, address: u16) -> u16 {
         let lower = self.read(address);
         let upper = self.read(address + 1);
         u16::from_be_bytes([upper, lower])
@@ -110,7 +110,7 @@ mod cpu_bus_test {
     }
 
     impl PpuRegistration for MockPpu {
-        fn read(&self, address: u16) -> u8 {
+        fn read(&mut self, address: u16) -> u8 {
             self.data[address as usize]
         }
 
@@ -131,7 +131,7 @@ mod cpu_bus_test {
             wram.write(0x0000, 0x01);
             wram.write(0x07FF, 0x02);
 
-            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
+            let mut bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read RAM
             assert_eq!(bus.read(0x0000), 0x01);
@@ -156,7 +156,7 @@ mod cpu_bus_test {
             ppu.write(0x0000, 0x01);
             ppu.write(0x0007, 0x02);
 
-            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
+            let mut bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read PPU
             assert_eq!(bus.read(0x2000), 0x01);
@@ -183,7 +183,7 @@ mod cpu_bus_test {
             program_rom[0x4000] = 0x03;
             program_rom[0x7FFF] = 0x04;
 
-            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
+            let mut bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read Program ROM
             assert_eq!(bus.read(0x8000), 0x01);
@@ -201,7 +201,7 @@ mod cpu_bus_test {
             program_rom[0x0000] = 0x01;
             program_rom[0x3FFF] = 0x02;
 
-            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
+            let mut bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             // Read Program ROM
             assert_eq!(bus.read(0x8000), 0x01);
@@ -224,7 +224,7 @@ mod cpu_bus_test {
             wram.write(0x0000, 0x01); // lower
             wram.write(0x0001, 0x02); // upper
 
-            let bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
+            let mut bus = CpuBus::new(&program_rom, &mut wram, &mut ppu);
 
             assert_eq!(bus.read_u16(0x0000), 0x0201);
         }

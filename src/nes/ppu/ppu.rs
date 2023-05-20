@@ -4,7 +4,7 @@ use super::{
     background::Background,
     palette_ram::{PaletteRam, PaletteType},
     pattern_table::PatternTable,
-    registers::{PpuRegisters, PpuRegistration},
+    registers::{PpuRegisters, PpuRegistration, ppu_status::PpuStatus},
     render::RenderContext,
     sprite::{build_sprite, Sprite},
     tile::Tile,
@@ -131,12 +131,28 @@ impl Ppu {
     pub fn reset_background(&mut self) {
         self.background = Background::new();
     }
+
+    pub fn read_status(&mut self) -> u8 {
+        let status = self.ppu_registers.ppu_status.bits();
+
+        self.ppu_registers.ppu_status.remove(PpuStatus::VBLANK_STARTED);
+        self.ppu_registers.ppu_status.remove(PpuStatus::SPRITE_ZERO_HIT);
+        self.ppu_registers.ppu_scroll.reset_write_target_is_x();
+        self.ppu_registers.ppu_addr.reset_latch();
+
+        status
+    }
 }
 
 impl PpuRegistration for Ppu {
-    fn read(&self, address: u16) -> u8 {
+    fn read(&mut self, address: u16) -> u8 {
         println!("PPU registers read | Address: {:x}", address);
-        unimplemented!();
+        match address {
+            0x0002 => self.read_status(),
+            // 0x0004 => {}
+            // 0x0007 => {}
+            _ => panic!("unimplemented read address: {}", address),
+        }
     }
 
     fn write(&mut self, address: u16, data: u8) {
@@ -173,7 +189,7 @@ impl<'a> RenderContext<'a> for Ppu {
 #[cfg(test)]
 mod ppu_test {
     use crate::nes::{
-        ppu::{palette::PaletteGroup, palette_ram::PaletteRam, sprite::build_sprite},
+        ppu::{palette::PaletteGroup, palette_ram::PaletteRam, sprite::build_sprite, registers::ppu_status::PpuStatus},
         ram::Ram,
     };
 
@@ -277,5 +293,27 @@ mod ppu_test {
         // Assert tile position
         assert_eq!(tile.position.x, 0);
         assert_eq!(tile.position.y, 0);
+    }
+
+    #[test]
+    fn read_status_test() {
+        let dummy_ram1 = Ram::new(0x4000);
+        let dummy_ram2 = Ram::new(0x4000);
+        let mut ppu = Ppu::new(PatternTable::new(dummy_ram1).unwrap(), dummy_ram2);
+
+        // Setup flag to be cleared
+        ppu.ppu_registers.ppu_addr.is_lower_addr = true;
+        ppu.ppu_registers.ppu_scroll.write_target_is_x = true;
+        ppu.ppu_registers.ppu_status.insert(PpuStatus::VBLANK_STARTED);
+        ppu.ppu_registers.ppu_status.insert(PpuStatus::SPRITE_ZERO_HIT);
+
+        let expect_status = ppu.ppu_registers.ppu_status.bits();
+        let status = ppu.read_status();
+
+        assert_eq!(status, expect_status);
+        assert_eq!(ppu.ppu_registers.ppu_addr.is_lower_addr, false);
+        assert_eq!(ppu.ppu_registers.ppu_scroll.write_target_is_x, false);
+        assert_eq!(ppu.ppu_registers.ppu_status.contains(PpuStatus::VBLANK_STARTED), false);
+        assert_eq!(ppu.ppu_registers.ppu_status.contains(PpuStatus::SPRITE_ZERO_HIT), false);
     }
 }

@@ -1,6 +1,6 @@
 pub struct PpuAddress {
-    addr: u16,
-    is_lower_addr: bool,
+    pub addr: u16,
+    pub is_lower_addr: bool,
 }
 
 impl PpuAddress {

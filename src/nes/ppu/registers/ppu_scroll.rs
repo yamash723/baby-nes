@@ -1,7 +1,7 @@
 pub struct PpuScroll {
     pub x: u8,
     pub y: u8,
-    write_target_is_x: bool,
+    pub write_target_is_x: bool,
 }
 
 impl PpuScroll {
@@ -23,8 +23,8 @@ impl PpuScroll {
         self.write_target_is_x = !self.write_target_is_x;
     }
 
-    pub fn enable_target_x(&mut self) {
-        self.write_target_is_x = true;
+    pub fn reset_write_target_is_x(&mut self) {
+        self.write_target_is_x = false;
     }
 }
 
@@ -56,9 +56,10 @@ mod ppu_scroll_test {
     }
 
     #[test]
-    fn enable_target_x_test() {
+    fn reset_write_target_is_x_test() {
         let mut ppu_scroll = PpuScroll::new();
-        ppu_scroll.enable_target_x();
-        assert_eq!(ppu_scroll.write_target_is_x, true);
+        ppu_scroll.write_target_is_x = true;
+        ppu_scroll.reset_write_target_is_x();
+        assert_eq!(ppu_scroll.write_target_is_x, false);
     }
 }
