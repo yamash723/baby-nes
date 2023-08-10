@@ -76,6 +76,7 @@ impl Nes {
                     render_callback(&frame);
                     self.ppu.reset_background();
 
+                    // Debug sleep
                     let ten_millis = time::Duration::from_millis(1000);
                     thread::sleep(ten_millis);
                 }

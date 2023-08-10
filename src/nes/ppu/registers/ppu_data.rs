@@ -1,5 +1,5 @@
 use crate::nes::{
-    ppu::{palette_ram::PaletteRam, ppu::Ppu},
+    ppu::{palette_ram::PaletteRam, pattern_table::PatternTable},
     ram::Ram,
 };
 
@@ -45,15 +45,15 @@ impl PpuData {
         };
     }
 
-    pub fn read(&mut self, addr: u16, ppu: &mut Ppu) -> u8 {
+    pub fn read(&mut self, addr: u16, pattern_table: &mut PatternTable, vram: &mut Ram) -> u8 {
         let buf = self.buf;
         let calibrated_addr = self.calibrate_address(addr);
 
         match PpuMemoryMapRule::address_to_map_type(addr) {
-            MapType::PatternTable => self.buf = *ppu.pattern_table.read(calibrated_addr),
-            MapType::Vram | MapType::VramMirror => self.buf = *ppu.vram.read(calibrated_addr),
+            MapType::PatternTable => self.buf = *pattern_table.read(calibrated_addr),
+            MapType::Vram | MapType::VramMirror => self.buf = *vram.read(calibrated_addr),
             MapType::Palette | MapType::PaletteMirror => {
-                self.buf = *ppu.vram.read(calibrated_addr);
+                self.buf = *vram.read(calibrated_addr);
                 return self.buf;
             }
         };
@@ -93,7 +93,7 @@ mod ppu_data_test {
         let mut ppu = Ppu::new(pattern_table, vram);
 
         let mut ppu_data = PpuData { buf: 0xEE };
-        let read_data = ppu_data.read(0x0000, &mut ppu);
+        let read_data = ppu_data.read(0x0000, &mut ppu.pattern_table, &mut ppu.vram);
 
         assert_eq!(read_data, 0xEE);
         assert_eq!(ppu_data.buf, 0xFF);
@@ -108,7 +108,7 @@ mod ppu_data_test {
         ppu.vram.write(0x00, 0xFF);
 
         let mut ppu_data = PpuData { buf: 0xEE };
-        let read_data = ppu_data.read(0x2000, &mut ppu);
+        let read_data = ppu_data.read(0x2000, &mut ppu.pattern_table, &mut ppu.vram);
 
         assert_eq!(read_data, 0xEE);
         assert_eq!(ppu_data.buf, 0xFF);
@@ -123,7 +123,7 @@ mod ppu_data_test {
         ppu.vram.write(0x00, 0xFF);
 
         let mut ppu_data = PpuData { buf: 0xEE };
-        let read_data = ppu_data.read(0x3000, &mut ppu);
+        let read_data = ppu_data.read(0x3000, &mut ppu.pattern_table, &mut ppu.vram);
 
         assert_eq!(read_data, 0xEE);
         assert_eq!(ppu_data.buf, 0xFF);
@@ -139,7 +139,7 @@ mod ppu_data_test {
         ppu.palette_ram.write(0x00, 0xEE);
 
         let mut ppu_data = PpuData { buf: 0xDD };
-        let read_data = ppu_data.read(0x3F00, &mut ppu);
+        let read_data = ppu_data.read(0x3F00, &mut ppu.pattern_table, &mut ppu.vram);
 
         assert_eq!(read_data, 0xFF);
         assert_eq!(ppu_data.buf, 0xFF);
@@ -155,7 +155,7 @@ mod ppu_data_test {
         ppu.palette_ram.write(0x00, 0xEE);
 
         let mut ppu_data = PpuData { buf: 0xEE };
-        let read_data = ppu_data.read(0x3F20, &mut ppu);
+        let read_data = ppu_data.read(0x3F20, &mut ppu.pattern_table, &mut ppu.vram);
 
         assert_eq!(read_data, 0xFF);
         assert_eq!(ppu_data.buf, 0xFF);

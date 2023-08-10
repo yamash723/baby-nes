@@ -4,7 +4,7 @@ use super::{
     background::Background,
     palette_ram::{PaletteRam, PaletteType},
     pattern_table::PatternTable,
-    registers::{PpuRegisters, PpuRegistration, ppu_status::PpuStatus},
+    registers::{PpuRegisters, PpuRegistration, ppu_status::PpuStatus, ppu_data::PpuData, ppu_address::PpuAddress},
     render::RenderContext,
     sprite::{build_sprite, Sprite},
     tile::Tile,
@@ -23,7 +23,9 @@ pub struct Ppu {
     pub pattern_table: PatternTable,
     pub vram: Ram,
     pub palette_ram: PaletteRam,
+    pub ppu_address: PpuAddress,
     pub ppu_registers: PpuRegisters,
+    pub ppu_data: PpuData,
     pub sprite_ram: Ram,
 }
 
@@ -45,7 +47,9 @@ impl Ppu {
             pattern_table,
             vram,
             palette_ram: PaletteRam::new(),
+            ppu_address: PpuAddress::new(),
             ppu_registers: PpuRegisters::new(),
+            ppu_data: PpuData::new(),
             sprite_ram: Ram::new(SPRITE_RAM_SIZE),
         }
     }
@@ -153,7 +157,12 @@ impl PpuRegistration for Ppu {
         match address {
             0x0002 => self.read_status(),
             0x0004 => *self.ppu_registers.oam.read(&self.sprite_ram),
-            // 0x0007 => {}
+            0x0007 => {
+                let ppu_address = self.ppu_address.read();
+                let ppu_data = self.ppu_data.read(ppu_address, &mut self.pattern_table, &mut self.vram);
+
+                ppu_data
+            },
             _ => panic!("unimplemented read address: {}", address),
         }
     }
@@ -319,5 +328,20 @@ mod ppu_test {
         assert_eq!(ppu.ppu_registers.ppu_scroll.write_target_is_x, false);
         assert_eq!(ppu.ppu_registers.ppu_status.contains(PpuStatus::VBLANK_STARTED), false);
         assert_eq!(ppu.ppu_registers.ppu_status.contains(PpuStatus::SPRITE_ZERO_HIT), false);
+    }
+
+    #[test]
+    fn read_ppu_data_test() {
+        let dummy_ram1 = Ram::new(0x4000);
+        let dummy_ram2 = Ram::new(0x4000);
+        let mut ppu = Ppu::new(PatternTable::new(dummy_ram1).unwrap(), dummy_ram2);
+
+        ppu.vram.write(0x0000, 0x20);
+        ppu.ppu_address.addr = 0x2000; // PPU 0x2000 -> VRAM 0x0000
+        ppu.ppu_data.buf = 0x10;
+
+        let data = ppu.read(0x0007);
+        assert_eq!(data, 0x10);
+        assert_eq!(ppu.ppu_data.buf, 0x20);
     }
 }
