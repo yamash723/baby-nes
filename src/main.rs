@@ -13,11 +13,25 @@ extern crate arrayref;
 
 use nes::Nes;
 use sdl2::pixels::PixelFormatEnum;
+use clap::Parser;
 
 const SCALE: f32 = 3.0;
 const APPLICATION_NAME: &str = "BabyNES";
 
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+    #[arg(short, long)]
+    rom_file_path: String,
+}
+
 fn main() {
+    // ------------------------------------------------------------
+    // Args check
+    // ------------------------------------------------------------
+    let args = Args::parse();
+    let rom_file_path = &args.rom_file_path;
+
     // ------------------------------------------------------------
     // Initialize UI
     // ------------------------------------------------------------
@@ -44,7 +58,7 @@ fn main() {
     // ------------------------------------------------------------
     // Initialize NES
     // ------------------------------------------------------------
-    let mut nes = Nes::new("rom/hello_world.nes").unwrap();
+    let mut nes = Nes::new(rom_file_path).unwrap();
 
     let render_callback = move |frame: &Frame| {
         texture.update(None, &frame.data, 256 * 3).unwrap();
